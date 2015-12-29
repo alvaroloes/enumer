@@ -1,4 +1,4 @@
-h1. Enumer
+#Enumer
 
 Enumer generates Go code to get string names from enum values and viceversa.
 It is a fork of [Rob Pike’s Stringer tool](https://godoc.org/golang.org/x/tools/cmd/stringer) 
