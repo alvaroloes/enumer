@@ -8,7 +8,7 @@ from a REST API request... In short, from those places where using the real enum
 be almost meaningless or hard to trace or use by a human
 
 For example, if we have an enum type called `Pill`,
-```
+```go
 type Pill int
 
 const (
@@ -20,7 +20,7 @@ const (
 )
 ```
 executing `enumer -type=Pill` will generate a new file with two methods:
-```
+```go
 func (i Pill) String() string {
     //...
 }
@@ -30,7 +30,7 @@ func PillString(s string) (Pill, error) {
 }
 ```
 From now on, we can:
-```
+```go
 // Convert any Pill value to string
 var aspirinString string = Aspirin.String()
 // (or use it in any place where a Stringer is accepted)
