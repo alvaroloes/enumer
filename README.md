@@ -1,4 +1,4 @@
-#Enumer
+# Enumer
 Enumer generates Go code to get string names from enum values and viceversa.
 It is a fork of [Rob Pike’s Stringer tool](https://godoc.org/golang.org/x/tools/cmd/stringer) 
 but adding a *"string to enum value"* method to the generated code.
@@ -51,3 +51,6 @@ The generated code is exactly the same as the Stringer tool plus the `<Type>Stri
 ## How to use
 The usage of Enumer is the same as Stringer, no changes were introduced.
 For more information please refer to the [Stringer docs](https://godoc.org/golang.org/x/tools/cmd/stringer) 
+
+## Additional functions of this fork
+This fork additionally implements the Scanner and Valuer interface to use a enum seamlessly in a database model.
