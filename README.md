@@ -54,3 +54,6 @@ For more information please refer to the [Stringer docs](https://godoc.org/golan
 
 ## Additional functions of this fork
 This fork additionally implements the Scanner and Valuer interface to use a enum seamlessly in a database model.
+
+## TODO
+- Add a flag to optionally generate implementation of Scanner und Valuer interface

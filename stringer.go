@@ -315,7 +315,7 @@ func (g *Generator) generate(typeName string) {
 	g.buildValueToNameMap(runs, typeName, 10)
 
 	// SQL
-	g.addValuerAndScanner(runs, typeName, 0)
+	g.addValuerAndScanner(typeName)
 }
 
 // splitIntoRuns breaks the values into runs of contiguous sequences.
