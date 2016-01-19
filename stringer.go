@@ -82,6 +82,7 @@ import (
 
 var (
 	typeNames = flag.String("type", "", "comma-separated list of type names; must be set")
+	noJSON    = flag.Bool("noJSON", false, "if true, json marshaling methods will NOT be included. Default: false")
 	output    = flag.String("output", "", "output file name; default srcdir/<type>_string.go")
 )
 
@@ -98,7 +99,7 @@ func Usage() {
 
 func main() {
 	log.SetFlags(0)
-	log.SetPrefix("stringer: ")
+	log.SetPrefix("enumer: ")
 	flag.Usage = Usage
 	flag.Parse()
 	if len(*typeNames) == 0 {
@@ -133,6 +134,9 @@ func main() {
 	g.Printf("package %s", g.pkg.name)
 	g.Printf("\n")
 	g.Printf("import \"fmt\"\n") // Used by all methods.
+	if !*noJSON {
+		g.Printf("import \"encoding/json\"\n")
+	}
 
 	// Run generate for each type.
 	for _, typeName := range types {
@@ -300,16 +304,20 @@ func (g *Generator) generate(typeName string) {
 	// being necessary for any realistic example other than bitmasks
 	// is very low. And bitmasks probably deserve their own analysis,
 	// to be done some other day.
+	const runsThreshold = 10
 	switch {
 	case len(runs) == 1:
 		g.buildOneRun(runs, typeName)
-	case len(runs) <= 10:
+	case len(runs) <= runsThreshold:
 		g.buildMultipleRuns(runs, typeName)
 	default:
 		g.buildMap(runs, typeName)
 	}
-	// ENUMER: This is the only addition over the original stringer code. Everything else is in enumer.go
-	g.buildValueToNameMap(runs, typeName, 10)
+	// ENUMER part
+	g.buildValueToNameMap(runs, typeName, runsThreshold)
+	if !*noJSON {
+		g.buildJSONMethods(runs, typeName, runsThreshold)
+	}
 }
 
 // splitIntoRuns breaks the values into runs of contiguous sequences.

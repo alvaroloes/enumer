@@ -1,4 +1,5 @@
 package main
+
 import "fmt"
 
 // Arguments to format are:
@@ -19,7 +20,7 @@ func (g *Generator) buildValueToNameMap(runs [][]Value, typeName string, runsThr
 	var runID string
 	for i, values := range runs {
 		if thereAreRuns {
-			runID = "_" + fmt.Sprintf("%d",i)
+			runID = "_" + fmt.Sprintf("%d", i)
 			n = 0
 		} else {
 			runID = ""
@@ -32,4 +33,27 @@ func (g *Generator) buildValueToNameMap(runs [][]Value, typeName string, runsThr
 	}
 	g.Printf("}\n\n")
 	g.Printf(stringValueToNameMap, typeName)
+}
+
+// Arguments to format are:
+//	[1]: type name
+const jsonMethods = `
+func (i %[1]s) MarshalJSON() ([]byte, error) {
+	return json.Marshal(i.String())
+}
+
+func (i *%[1]s) UnmarshalJSON(data []byte) error {
+	var s string
+	if err := json.Unmarshal(data, &s); err != nil {
+		return fmt.Errorf("%[1]s should be a string, got %%s", data)
+	}
+
+	var err error
+	*i, err = %[1]sString(s)
+	return err
+}
+`
+
+func (g *Generator) buildJSONMethods(runs [][]Value, typeName string, runsThreshold int) {
+	g.Printf(jsonMethods, typeName)
 }
