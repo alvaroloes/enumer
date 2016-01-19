@@ -140,7 +140,7 @@ func main() {
 
 	// Run generate for each type.
 	for _, typeName := range types {
-		g.generate(typeName)
+		g.generate(typeName, !*noJSON)
 	}
 
 	// Format the output.
@@ -276,7 +276,7 @@ func (pkg *Package) check(fs *token.FileSet, astFiles []*ast.File) {
 }
 
 // generate produces the String method for the named type.
-func (g *Generator) generate(typeName string) {
+func (g *Generator) generate(typeName string, includeJSON bool) {
 	values := make([]Value, 0, 100)
 	for _, file := range g.pkg.files {
 		// Set the state for this run of the walker.
@@ -315,7 +315,7 @@ func (g *Generator) generate(typeName string) {
 	}
 	// ENUMER part
 	g.buildValueToNameMap(runs, typeName, runsThreshold)
-	if !*noJSON {
+	if includeJSON {
 		g.buildJSONMethods(runs, typeName, runsThreshold)
 	}
 }
