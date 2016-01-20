@@ -2,7 +2,7 @@
 Enumer is a tool to generate Go code that adds useful methods Go enums (constants with a specific type)
 It started as a fork of [Rob Pike’s Stringer tool](https://godoc.org/golang.org/x/tools/cmd/stringer).
 
-#Generated functions and methods
+##Generated functions and methods
 When Enumer is applied to a type, it will generate three methods and one function:
 
 * A method `String()` that returns the string representation of the enum value. This makes the enum conform
@@ -74,4 +74,8 @@ for more information.
 
 There is only one flag added: `noJSON`. If this flag is set to true (i.e. `enumer -type=Pill -noJSON`), 
 the JSON related methods won't be generated.
+
+## Inspiring projects
+* [Stringer](https://godoc.org/golang.org/x/tools/cmd/stringer)
+* [jsonenums](https://github.com/campoy/jsonenums)
 
