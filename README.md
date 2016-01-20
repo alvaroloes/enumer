@@ -11,7 +11,7 @@ the `Stringer` interface, so whenever you print an enum value, you'll get the st
 when you need to read enum values from the command line arguments, from a configuration file, 
 from a REST API request... In short, from those places where using the real enum value (an integer) would 
 be almost meaningless or hard to trace or use by a human.
-* And two more methods, `MarshalJSON()` and `UnmarshalJSON()`, that makes the enum conform to 
+* And two more methods, `MarshalJSON()` and `UnmarshalJSON()`, that makes the enum conform 
 the `json.Marshaler` and `json.Unmarshaler` interfaces. Very useful to use it in JSON APIs.
 
 For example, if we have an enum type called `Pill`,
@@ -59,8 +59,10 @@ if err != nil {
 }
 // Now pill == Ibuprofen
 
-// Or marshal/unmarshal to/from json strings
-
+// Marshal/unmarshal to/from json strings, either directly or automatically when
+// the enum is a field of a struct
+pillJSON := Aspirin.MarshalJSON()
+// Now pillJSON == `"Aspirin"`
 ```
 
 The generated code is exactly the same as the Stringer tool plus the mentioned additions, so you can use
@@ -69,6 +71,7 @@ The generated code is exactly the same as the Stringer tool plus the mentioned a
 ## How to use
 The usage of Enumer is the same as Stringer, so you can refer to the [Stringer docs](https://godoc.org/golang.org/x/tools/cmd/stringer)
 for more information.
+
 There is only one flag added: `noJSON`. If this flag is set to true (i.e. `enumer -type=Pill -noJSON`), 
 the JSON related methods won't be generated.
 
