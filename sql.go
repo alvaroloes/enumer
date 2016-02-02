@@ -10,7 +10,7 @@ const valuer = `func (i %[1]s) Value() (driver.Value, error) {
 const scanner = `func (i %[1]s) Scan(value interface{}) error {
 	bytes, ok := value.([]byte)
 	if !ok {
-		fmt.Errorf("value is not a byte slice")
+		return fmt.Errorf("value is not a byte slice")
 	}
 
 	str := string(bytes[:])
