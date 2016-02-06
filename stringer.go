@@ -82,6 +82,7 @@ import (
 
 var (
 	typeNames = flag.String("type", "", "comma-separated list of type names; must be set")
+	noJSON    = flag.Bool("noJSON", false, "if true, json marshaling methods will NOT be included. Default: false")
 	output    = flag.String("output", "", "output file name; default srcdir/<type>_string.go")
 )
 
@@ -98,7 +99,7 @@ func Usage() {
 
 func main() {
 	log.SetFlags(0)
-	log.SetPrefix("stringer: ")
+	log.SetPrefix("enumer: ")
 	flag.Usage = Usage
 	flag.Parse()
 	if len(*typeNames) == 0 {
@@ -135,11 +136,14 @@ func main() {
 	g.Printf("import (\n")
 	g.Printf("\t\"fmt\"\n")
 	g.Printf("\t\"database/sql/driver\"\n")
+	if !*noJSON {
+		g.Printf("\t\"encoding/json\"\n")
+	}
 	g.Printf(")\n")
 
 	// Run generate for each type.
 	for _, typeName := range types {
-		g.generate(typeName)
+		g.generate(typeName, !*noJSON)
 	}
 
 	// Format the output.
@@ -275,7 +279,7 @@ func (pkg *Package) check(fs *token.FileSet, astFiles []*ast.File) {
 }
 
 // generate produces the String method for the named type.
-func (g *Generator) generate(typeName string) {
+func (g *Generator) generate(typeName string, includeJSON bool) {
 	values := make([]Value, 0, 100)
 	for _, file := range g.pkg.files {
 		// Set the state for this run of the walker.
@@ -303,16 +307,21 @@ func (g *Generator) generate(typeName string) {
 	// being necessary for any realistic example other than bitmasks
 	// is very low. And bitmasks probably deserve their own analysis,
 	// to be done some other day.
+	const runsThreshold = 10
 	switch {
 	case len(runs) == 1:
 		g.buildOneRun(runs, typeName)
-	case len(runs) <= 10:
+	case len(runs) <= runsThreshold:
 		g.buildMultipleRuns(runs, typeName)
 	default:
 		g.buildMap(runs, typeName)
 	}
-	// ENUMER: This is the only addition over the original stringer code. Everything else is in enumer.go
-	g.buildValueToNameMap(runs, typeName, 10)
+
+	// ENUMER part
+	g.buildValueToNameMap(runs, typeName, runsThreshold)
+	if includeJSON {
+		g.buildJSONMethods(runs, typeName, runsThreshold)
+	}
 
 	// SQL
 	g.addValueAndScanMethod(typeName)

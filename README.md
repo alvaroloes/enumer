@@ -1,11 +1,18 @@
-# Enumer
-Enumer generates Go code to get string names from enum values and viceversa.
-It is a fork of [Rob Pike’s Stringer tool](https://godoc.org/golang.org/x/tools/cmd/stringer) 
-but adding a *"string to enum value"* method to the generated code.
+#Enumer
+Enumer is a tool to generate Go code that adds useful methods to Go enums (constants with a specific type).
+It started as a fork of [Rob Pike’s Stringer tool](https://godoc.org/golang.org/x/tools/cmd/stringer).
 
-This is useful when you need to read enum values from the command line arguments, from a configuration file, 
+##Generated functions and methods
+When Enumer is applied to a type, it will generate three methods and one function:
+
+* A method `String()` that returns the string representation of the enum value. This makes the enum conform
+the `Stringer` interface, so whenever you print an enum value, you'll get the string name instead of a number.
+* A function `<Type>String(s string)` to get the enum value from its string representation. This is useful 
+when you need to read enum values from the command line arguments, from a configuration file, 
 from a REST API request... In short, from those places where using the real enum value (an integer) would 
-be almost meaningless or hard to trace or use by a human
+be almost meaningless or hard to trace or use by a human.
+* And two more methods, `MarshalJSON()` and `UnmarshalJSON()`, that makes the enum conform 
+the `json.Marshaler` and `json.Unmarshaler` interfaces. Very useful to use it in JSON APIs.
 
 For example, if we have an enum type called `Pill`,
 ```go
@@ -19,7 +26,7 @@ const (
 	Acetaminophen = Paracetamol
 )
 ```
-executing `enumer -type=Pill` will generate a new file with two methods:
+executing `enumer -type=Pill` will generate a new file with four methods:
 ```go
 func (i Pill) String() string {
     //...
@@ -27,6 +34,14 @@ func (i Pill) String() string {
 
 func PillString(s string) (Pill, error) {
     //...
+}
+
+func (i Pill) MarshalJSON() ([]byte, error) {
+	//...
+}
+
+func (i *Pill) UnmarshalJSON(data []byte) error {
+	//...
 }
 ```
 From now on, we can:
@@ -43,17 +58,26 @@ if err != nil {
     return
 }
 // Now pill == Ibuprofen
+
+// Marshal/unmarshal to/from json strings, either directly or automatically when
+// the enum is a field of a struct
+pillJSON := Aspirin.MarshalJSON()
+// Now pillJSON == `"Aspirin"`
 ```
 
-The generated code is exactly the same as the Stringer tool plus the `<Type>String` method, so you can use
+The generated code is exactly the same as the Stringer tool plus the mentioned additions, so you can use
 **Enumer** where you are already using **Stringer** without any code change.
 
 ## How to use
-The usage of Enumer is the same as Stringer, no changes were introduced.
-For more information please refer to the [Stringer docs](https://godoc.org/golang.org/x/tools/cmd/stringer) 
+The usage of Enumer is the same as Stringer, so you can refer to the [Stringer docs](https://godoc.org/golang.org/x/tools/cmd/stringer)
+for more information.
+
+There is only one flag added: `noJSON`. If this flag is set to true (i.e. `enumer -type=Pill -noJSON`), 
+the JSON related methods won't be generated.
 
 ## Additional functions of this fork
 This fork additionally implements the Scanner and Valuer interface to use a enum seamlessly in a database model.
 
-## TODO
-- Add a flag to optionally generate implementation of Scanner und Valuer interface
+## Inspiring projects
+* [Stringer](https://godoc.org/golang.org/x/tools/cmd/stringer)
+* [jsonenums](https://github.com/campoy/jsonenums)
