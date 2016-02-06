@@ -83,6 +83,7 @@ import (
 var (
 	typeNames = flag.String("type", "", "comma-separated list of type names; must be set")
 	noJSON    = flag.Bool("noJSON", false, "if true, json marshaling methods will NOT be included. Default: false")
+	sql       = flag.Bool("sql", false, "if true, the Scanner and Valuer interface will be implemented.")
 	output    = flag.String("output", "", "output file name; default srcdir/<type>_string.go")
 )
 
@@ -135,9 +136,11 @@ func main() {
 	g.Printf("\n")
 	g.Printf("import (\n")
 	g.Printf("\t\"fmt\"\n")
-	g.Printf("\t\"database/sql/driver\"\n")
 	if !*noJSON {
 		g.Printf("\t\"encoding/json\"\n")
+	}
+	if *sql {
+		g.Printf("\t\"database/sql/driver\"\n")
 	}
 	g.Printf(")\n")
 
@@ -324,7 +327,9 @@ func (g *Generator) generate(typeName string, includeJSON bool) {
 	}
 
 	// SQL
-	g.addValueAndScanMethod(typeName)
+	if *sql {
+		g.addValueAndScanMethod(typeName)
+	}
 }
 
 // splitIntoRuns breaks the values into runs of contiguous sequences.

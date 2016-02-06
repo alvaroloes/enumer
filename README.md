@@ -72,11 +72,9 @@ The generated code is exactly the same as the Stringer tool plus the mentioned a
 The usage of Enumer is the same as Stringer, so you can refer to the [Stringer docs](https://godoc.org/golang.org/x/tools/cmd/stringer)
 for more information.
 
-There is only one flag added: `noJSON`. If this flag is set to true (i.e. `enumer -type=Pill -noJSON`), 
-the JSON related methods won't be generated.
-
-## Additional functions of this fork
-This fork additionally implements the Scanner and Valuer interface to use a enum seamlessly in a database model.
+There are two flags added: `noJSON` and `sql`. If the noJSON flag is set to true (i.e. `enumer -type=Pill -noJSON`), 
+the JSON related methods won't be generated. And if the sql flag is set to true, the Scanner and Valuer interface will 
+be implemented to seamlessly use the enum in a database model.
 
 ## Inspiring projects
 * [Stringer](https://godoc.org/golang.org/x/tools/cmd/stringer)
