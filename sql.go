@@ -2,12 +2,12 @@ package main
 
 // Arguments to format are:
 //	[1]: type name
-const valuer = `func (i %[1]s) Value() (driver.Value, error) {
+const valueMethod = `func (i %[1]s) Value() (driver.Value, error) {
 	return i.String(), nil
 }
 `
 
-const scanner = `func (i %[1]s) Scan(value interface{}) error {
+const scanMethod = `func (i %[1]s) Scan(value interface{}) error {
 	bytes, ok := value.([]byte)
 	if !ok {
 		return fmt.Errorf("value is not a byte slice")
@@ -25,9 +25,9 @@ const scanner = `func (i %[1]s) Scan(value interface{}) error {
 }
 `
 
-func (g *Generator) addValuerAndScanner(typeName string) {
+func (g *Generator) addValueAndScanMethod(typeName string) {
 	g.Printf("\n")
-	g.Printf(valuer, typeName)
+	g.Printf(valueMethod, typeName)
 	g.Printf("\n\n")
-	g.Printf(scanner, typeName)
+	g.Printf(scanMethod, typeName)
 }
