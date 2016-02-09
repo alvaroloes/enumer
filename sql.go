@@ -7,7 +7,7 @@ const valueMethod = `func (i %[1]s) Value() (driver.Value, error) {
 }
 `
 
-const scanMethod = `func (i %[1]s) Scan(value interface{}) error {
+const scanMethod = `func (i *%[1]s) Scan(value interface{}) error {
 	bytes, ok := value.([]byte)
 	if !ok {
 		return fmt.Errorf("value is not a byte slice")
@@ -20,7 +20,7 @@ const scanMethod = `func (i %[1]s) Scan(value interface{}) error {
 		return err
 	}
 	
-	i = val
+	*i = val
 	return nil
 }
 `
