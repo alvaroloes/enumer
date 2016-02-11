@@ -8,6 +8,10 @@ const valueMethod = `func (i %[1]s) Value() (driver.Value, error) {
 `
 
 const scanMethod = `func (i *%[1]s) Scan(value interface{}) error {
+	if value == nil {
+		return nil
+	}
+
 	bytes, ok := value.([]byte)
 	if !ok {
 		return fmt.Errorf("value is not a byte slice")
