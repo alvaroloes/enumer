@@ -67,6 +67,7 @@ import (
 	"go/format"
 	"go/parser"
 	"go/token"
+	"go/types"
 	"io/ioutil"
 	"log"
 	"os"
@@ -74,10 +75,9 @@ import (
 	"sort"
 	"strings"
 
-	"golang.org/x/tools/go/exact"
-	"golang.org/x/tools/go/types"
+	exact "go/constant"
 
-	_ "golang.org/x/tools/go/gcimporter"
+	_ "go/importer"
 )
 
 var (
