@@ -82,7 +82,7 @@ import (
 
 var (
 	typeNames = flag.String("type", "", "comma-separated list of type names; must be set")
-	noJSON    = flag.Bool("noJSON", false, "if true, json marshaling methods will NOT be included. Default: false")
+	json      = flag.Bool("json", false, "if true, json marshaling methods will be generated. Default: false")
 	output    = flag.String("output", "", "output file name; default srcdir/<type>_string.go")
 )
 
@@ -134,13 +134,13 @@ func main() {
 	g.Printf("package %s", g.pkg.name)
 	g.Printf("\n")
 	g.Printf("import \"fmt\"\n") // Used by all methods.
-	if !*noJSON {
+	if *json {
 		g.Printf("import \"encoding/json\"\n")
 	}
 
 	// Run generate for each type.
 	for _, typeName := range types {
-		g.generate(typeName, !*noJSON)
+		g.generate(typeName, *json)
 	}
 
 	// Format the output.
