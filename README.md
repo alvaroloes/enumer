@@ -3,7 +3,7 @@ Enumer is a tool to generate Go code that adds useful methods to Go enums (const
 It started as a fork of [Rob Pike’s Stringer tool](https://godoc.org/golang.org/x/tools/cmd/stringer).
 
 ##Generated functions and methods
-When Enumer is applied to a type, it will generate three methods and one function:
+When Enumer is applied to a type, it will generate:
 
 * A method `String()` that returns the string representation of the enum value. This makes the enum conform
 the `Stringer` interface, so whenever you print an enum value, you'll get the string name instead of a number.
@@ -11,8 +11,8 @@ the `Stringer` interface, so whenever you print an enum value, you'll get the st
 when you need to read enum values from the command line arguments, from a configuration file, 
 from a REST API request... In short, from those places where using the real enum value (an integer) would 
 be almost meaningless or hard to trace or use by a human.
-* And two more methods, `MarshalJSON()` and `UnmarshalJSON()`, that makes the enum conform 
-the `json.Marshaler` and `json.Unmarshaler` interfaces. Very useful to use it in JSON APIs.
+* When the flag `json` is provided, two more methods will be generated, `MarshalJSON()` and `UnmarshalJSON()`. Those make
+the enum conform the `json.Marshaler` and `json.Unmarshaler` interfaces. Very useful to use it in JSON APIs.
 
 For example, if we have an enum type called `Pill`,
 ```go
@@ -26,7 +26,7 @@ const (
 	Acetaminophen = Paracetamol
 )
 ```
-executing `enumer -type=Pill` will generate a new file with four methods:
+executing `enumer -type=Pill -json` will generate a new file with four methods:
 ```go
 func (i Pill) String() string {
     //...
@@ -72,8 +72,8 @@ The generated code is exactly the same as the Stringer tool plus the mentioned a
 The usage of Enumer is the same as Stringer, so you can refer to the [Stringer docs](https://godoc.org/golang.org/x/tools/cmd/stringer)
 for more information.
 
-There are two flags added: `noJSON` and `sql`. If the noJSON flag is set to true (i.e. `enumer -type=Pill -noJSON`), 
-the JSON related methods won't be generated. And if the sql flag is set to true, the Scanner and Valuer interface will 
+There are two flags added: `json` and `sql`. If the json flag is set to true (i.e. `enumer -type=Pill -json`), 
+the JSON related methods will be generated. And if the sql flag is set to true, the Scanner and Valuer interface will 
 be implemented to seamlessly use the enum in a database model.
 
 ## Inspiring projects

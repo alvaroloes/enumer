@@ -30,7 +30,7 @@ var golden = []Golden{
 	{"prime", prime_in, prime_out},
 }
 
-var goldenJSON = []Golden {
+var goldenJSON = []Golden{
 	{"prime", prime_json_in, prime_json_out},
 }
 

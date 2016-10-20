@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
+// +build go1.5
+
 // Stringer is a tool to automate the creation of methods that satisfy the fmt.Stringer
 // interface. Given the name of a (signed or unsigned) integer type T that has constants
 // defined, stringer will create a new self-contained Go source file implementing
@@ -80,8 +82,8 @@ import (
 
 var (
 	typeNames = flag.String("type", "", "comma-separated list of type names; must be set")
-	noJSON    = flag.Bool("noJSON", false, "if true, json marshaling methods will NOT be included. Default: false")
 	sql       = flag.Bool("sql", false, "if true, the Scanner and Valuer interface will be implemented.")
+	json      = flag.Bool("json", false, "if true, json marshaling methods will be generated. Default: false")
 	output    = flag.String("output", "", "output file name; default srcdir/<type>_string.go")
 )
 
@@ -89,7 +91,7 @@ var (
 func Usage() {
 	fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
 	fmt.Fprintf(os.Stderr, "\tstringer [flags] -type T [directory]\n")
-	fmt.Fprintf(os.Stderr, "\tstringer [flags[ -type T files... # Must be a single package\n")
+	fmt.Fprintf(os.Stderr, "\tstringer [flags] -type T files... # Must be a single package\n")
 	fmt.Fprintf(os.Stderr, "For more information, see:\n")
 	fmt.Fprintf(os.Stderr, "\thttp://godoc.org/golang.org/x/tools/cmd/stringer\n")
 	fmt.Fprintf(os.Stderr, "Flags:\n")
@@ -134,17 +136,17 @@ func main() {
 	g.Printf("\n")
 	g.Printf("import (\n")
 	g.Printf("\t\"fmt\"\n")
-	if !*noJSON {
-		g.Printf("\t\"encoding/json\"\n")
-	}
 	if *sql {
 		g.Printf("\t\"database/sql/driver\"\n")
+	}
+	if *json {
+		g.Printf("\t\"encoding/json\"\n")
 	}
 	g.Printf(")\n")
 
 	// Run generate for each type.
 	for _, typeName := range types {
-		g.generate(typeName, !*noJSON)
+		g.generate(typeName, *json)
 	}
 
 	// Format the output.
