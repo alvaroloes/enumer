@@ -12,12 +12,15 @@ const scanMethod = `func (i *%[1]s) Scan(value interface{}) error {
 		return nil
 	}
 
-	bytes, ok := value.([]byte)
+	str, ok := value.(string)
 	if !ok {
-		return fmt.Errorf("value is not a byte slice")
-	}
+		bytes, ok := value.([]byte)
+		if !ok {
+			return fmt.Errorf("value is not a byte slice")
+		}
 
-	str := string(bytes[:])
+		str = string(bytes[:])
+	}
 
 	val, err := %[1]sString(str)
 	if err != nil {
