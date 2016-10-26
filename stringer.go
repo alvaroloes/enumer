@@ -82,6 +82,7 @@ import (
 
 var (
 	typeNames = flag.String("type", "", "comma-separated list of type names; must be set")
+	sql       = flag.Bool("sql", false, "if true, the Scanner and Valuer interface will be implemented.")
 	json      = flag.Bool("json", false, "if true, json marshaling methods will be generated. Default: false")
 	output    = flag.String("output", "", "output file name; default srcdir/<type>_string.go")
 )
@@ -133,10 +134,15 @@ func main() {
 	g.Printf("\n")
 	g.Printf("package %s", g.pkg.name)
 	g.Printf("\n")
-	g.Printf("import \"fmt\"\n") // Used by all methods.
-	if *json {
-		g.Printf("import \"encoding/json\"\n")
+	g.Printf("import (\n")
+	g.Printf("\t\"fmt\"\n")
+	if *sql {
+		g.Printf("\t\"database/sql/driver\"\n")
 	}
+	if *json {
+		g.Printf("\t\"encoding/json\"\n")
+	}
+	g.Printf(")\n")
 
 	// Run generate for each type.
 	for _, typeName := range types {
@@ -313,10 +319,16 @@ func (g *Generator) generate(typeName string, includeJSON bool) {
 	default:
 		g.buildMap(runs, typeName)
 	}
+
 	// ENUMER part
 	g.buildValueToNameMap(runs, typeName, runsThreshold)
 	if includeJSON {
 		g.buildJSONMethods(runs, typeName, runsThreshold)
+	}
+
+	// SQL
+	if *sql {
+		g.addValueAndScanMethod(typeName)
 	}
 }
 
