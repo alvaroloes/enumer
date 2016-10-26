@@ -13,7 +13,7 @@ from a REST API request... In short, from those places where using the real enum
 be almost meaningless or hard to trace or use by a human.
 * When the flag `json` is provided, two more methods will be generated, `MarshalJSON()` and `UnmarshalJSON()`. Those make
 the enum conform the `json.Marshaler` and `json.Unmarshaler` interfaces. Very useful to use it in JSON APIs.
-* When the flag `sql` is provided the methods for implementing the Scanner and Valuer interfaces will be also generated.
+* When the flag `sql` is provided, the methods for implementing the Scanner and Valuer interfaces will be also generated.
 Useful when storing the enum in a database.
 
 For example, if we have an enum type called `Pill`,
