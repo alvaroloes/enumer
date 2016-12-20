@@ -34,6 +34,10 @@ var goldenJSON = []Golden{
 	{"prime", prime_json_in, prime_json_out},
 }
 
+var goldenYAML = []Golden{
+	{"prime", prime_yaml_in, prime_yaml_out},
+}
+
 var goldenSQL = []Golden{
 	{"prime", prime_sql_in, prime_sql_out},
 }
@@ -434,6 +438,90 @@ func (i *Prime) UnmarshalJSON(data []byte) error {
 }
 `
 
+const prime_yaml_in = `type Prime int
+const (
+	p2 Prime = 2
+	p3 Prime = 3
+	p5 Prime = 5
+	p7 Prime = 7
+	p77 Prime = 7 // Duplicate; note that p77 doesn't appear below.
+	p11 Prime = 11
+	p13 Prime = 13
+	p17 Prime = 17
+	p19 Prime = 19
+	p23 Prime = 23
+	p29 Prime = 29
+	p37 Prime = 31
+	p41 Prime = 41
+	p43 Prime = 43
+)
+`
+
+const prime_yaml_out = `
+const _Prime_name = "p2p3p5p7p11p13p17p19p23p29p37p41p43"
+
+var _Prime_map = map[Prime]string{
+	2:  _Prime_name[0:2],
+	3:  _Prime_name[2:4],
+	5:  _Prime_name[4:6],
+	7:  _Prime_name[6:8],
+	11: _Prime_name[8:11],
+	13: _Prime_name[11:14],
+	17: _Prime_name[14:17],
+	19: _Prime_name[17:20],
+	23: _Prime_name[20:23],
+	29: _Prime_name[23:26],
+	31: _Prime_name[26:29],
+	41: _Prime_name[29:32],
+	43: _Prime_name[32:35],
+}
+
+func (i Prime) String() string {
+	if str, ok := _Prime_map[i]; ok {
+		return str
+	}
+	return fmt.Sprintf("Prime(%d)", i)
+}
+
+var _PrimeNameToValue_map = map[string]Prime{
+	_Prime_name[0:2]:   2,
+	_Prime_name[2:4]:   3,
+	_Prime_name[4:6]:   5,
+	_Prime_name[6:8]:   7,
+	_Prime_name[8:11]:  11,
+	_Prime_name[11:14]: 13,
+	_Prime_name[14:17]: 17,
+	_Prime_name[17:20]: 19,
+	_Prime_name[20:23]: 23,
+	_Prime_name[23:26]: 29,
+	_Prime_name[26:29]: 31,
+	_Prime_name[29:32]: 41,
+	_Prime_name[32:35]: 43,
+}
+
+func PrimeString(s string) (Prime, error) {
+	if val, ok := _PrimeNameToValue_map[s]; ok {
+		return val, nil
+	}
+	return 0, fmt.Errorf("%s does not belong to Prime values", s)
+}
+
+func (i Prime) MarshalYAML() (interface{}, error) {
+	return i.String(), nil
+}
+
+func (i *Prime) UnmarshalYAML(unmarshal func(interface{}) error) error {
+	var s string
+	if err := unmarshal(&s); err != nil {
+		return err
+	}
+
+	var err error
+	*i, err = PrimeString(s)
+	return err
+}
+`
+
 const prime_sql_in = `type Prime int
 const (
 	p2 Prime = 2
@@ -645,20 +733,23 @@ func (i *Prime) Scan(value interface{}) error {
 
 func TestGolden(t *testing.T) {
 	for _, test := range golden {
-		runGoldenTest(t, test, false, false)
+		runGoldenTest(t, test, false, false, false)
 	}
 	for _, test := range goldenJSON {
-		runGoldenTest(t, test, true, false)
+		runGoldenTest(t, test, true, false, false)
+	}
+	for _, test := range goldenYAML {
+		runGoldenTest(t, test, false, true, false)
 	}
 	for _, test := range goldenSQL {
-		runGoldenTest(t, test, false, true)
+		runGoldenTest(t, test, false, false, true)
 	}
 	for _, test := range goldenJSONAndSQL {
-		runGoldenTest(t, test, true, true)
+		runGoldenTest(t, test, true, false, true)
 	}
 }
 
-func runGoldenTest(t *testing.T, test Golden, generateJSON, generateSQL bool) {
+func runGoldenTest(t *testing.T, test Golden, generateJSON, generateYAML, generateSQL bool) {
 	var g Generator
 	input := "package test\n" + test.input
 	file := test.name + ".go"
@@ -668,7 +759,7 @@ func runGoldenTest(t *testing.T, test Golden, generateJSON, generateSQL bool) {
 	if len(tokens) != 3 {
 		t.Fatalf("%s: need type declaration on first line", test.name)
 	}
-	g.generate(tokens[1], generateJSON, generateSQL)
+	g.generate(tokens[1], generateJSON, generateYAML, generateSQL)
 	got := string(g.format())
 	if got != test.output {
 		t.Errorf("%s: got\n====\n%s====\nexpected\n====%s", test.name, got, test.output)

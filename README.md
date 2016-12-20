@@ -7,12 +7,14 @@ When Enumer is applied to a type, it will generate:
 
 * A method `String()` that returns the string representation of the enum value. This makes the enum conform
 the `Stringer` interface, so whenever you print an enum value, you'll get the string name instead of a number.
-* A function `<Type>String(s string)` to get the enum value from its string representation. This is useful 
-when you need to read enum values from the command line arguments, from a configuration file, 
-from a REST API request... In short, from those places where using the real enum value (an integer) would 
+* A function `<Type>String(s string)` to get the enum value from its string representation. This is useful
+when you need to read enum values from command line arguments, from a configuration file, or
+from a REST API request... In short, from those places where using the real enum value (an integer) would
 be almost meaningless or hard to trace or use by a human.
-* When the flag `json` is provided, two more methods will be generated, `MarshalJSON()` and `UnmarshalJSON()`. Those make
-the enum conform the `json.Marshaler` and `json.Unmarshaler` interfaces. Very useful to use it in JSON APIs.
+* When the flag `json` is provided, two additional methods will be generated, `MarshalJSON()` and `UnmarshalJSON()`. These make
+the enum conform to the `json.Marshaler` and `json.Unmarshaler` interfaces. Very useful to use it in JSON APIs.
+* When the flag `yaml` is provided, two additional methods will be generated, `MarshalYAML()` and `UnmarshalYAML()`. These make
+the enum conform to the `gopkg.in/yaml.v2.Marshaler` and `gopkg.in/yaml.v2.Unmarshaler` interfaces.
 * When the flag `sql` is provided, the methods for implementing the Scanner and Valuer interfaces will be also generated.
 Useful when storing the enum in a database.
 
@@ -74,8 +76,9 @@ The generated code is exactly the same as the Stringer tool plus the mentioned a
 The usage of Enumer is the same as Stringer, so you can refer to the [Stringer docs](https://godoc.org/golang.org/x/tools/cmd/stringer)
 for more information.
 
-There are two flags added: `json` and `sql`. If the json flag is set to true (i.e. `enumer -type=Pill -json`), 
-the JSON related methods will be generated. And if the sql flag is set to true, the Scanner and Valuer interface will 
+There are three flags added: `json`, `yaml` and `sql`. If the json flag is set to true (i.e. `enumer -type=Pill -json`),
+the JSON related methods will be generated. Similarly if the yaml flag is set to true,
+the YAML related methods will be generated. And if the sql flag is set to true, the Scanner and Valuer interface will
 be implemented to seamlessly use the enum in a database model.
 
 ## Inspiring projects

@@ -57,3 +57,26 @@ func (i *%[1]s) UnmarshalJSON(data []byte) error {
 func (g *Generator) buildJSONMethods(runs [][]Value, typeName string, runsThreshold int) {
 	g.Printf(jsonMethods, typeName)
 }
+
+// Arguments to format are:
+//	[1]: type name
+const yamlMethods = `
+func (i %[1]s) MarshalYAML() (interface{}, error) {
+	return i.String(), nil
+}
+
+func (i *%[1]s) UnmarshalYAML(unmarshal func(interface{}) error) error {
+	var s string
+	if err := unmarshal(&s); err != nil {
+		return err
+	}
+
+	var err error
+	*i, err = %[1]sString(s)
+	return err
+}
+`
+
+func (g *Generator) buildYAMLMethods(runs [][]Value, typeName string, runsThreshold int) {
+	g.Printf(yamlMethods, typeName)
+}
