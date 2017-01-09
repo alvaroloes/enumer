@@ -84,6 +84,7 @@ var (
 	typeNames = flag.String("type", "", "comma-separated list of type names; must be set")
 	sql       = flag.Bool("sql", false, "if true, the Scanner and Valuer interface will be implemented.")
 	json      = flag.Bool("json", false, "if true, json marshaling methods will be generated. Default: false")
+	yaml      = flag.Bool("yaml", false, "if true, yaml marshaling methods will be generated. Default: false")
 	output    = flag.String("output", "", "output file name; default srcdir/<type>_string.go")
 )
 
@@ -146,7 +147,7 @@ func main() {
 
 	// Run generate for each type.
 	for _, typeName := range types {
-		g.generate(typeName, *json, *sql)
+		g.generate(typeName, *json, *yaml, *sql)
 	}
 
 	// Format the output.
@@ -282,7 +283,7 @@ func (pkg *Package) check(fs *token.FileSet, astFiles []*ast.File) {
 }
 
 // generate produces the String method for the named type.
-func (g *Generator) generate(typeName string, includeJSON, includeSQL bool) {
+func (g *Generator) generate(typeName string, includeJSON, includeYAML, includeSQL bool) {
 	values := make([]Value, 0, 100)
 	for _, file := range g.pkg.files {
 		// Set the state for this run of the walker.
@@ -324,7 +325,9 @@ func (g *Generator) generate(typeName string, includeJSON, includeSQL bool) {
 	if includeJSON {
 		g.buildJSONMethods(runs, typeName, runsThreshold)
 	}
-
+	if includeYAML {
+		g.buildYAMLMethods(runs, typeName, runsThreshold)
+	}
 	if includeSQL {
 		g.addValueAndScanMethod(typeName)
 	}
