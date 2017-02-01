@@ -81,11 +81,12 @@ import (
 )
 
 var (
-	typeNames = flag.String("type", "", "comma-separated list of type names; must be set")
-	sql       = flag.Bool("sql", false, "if true, the Scanner and Valuer interface will be implemented.")
-	json      = flag.Bool("json", false, "if true, json marshaling methods will be generated. Default: false")
-	yaml      = flag.Bool("yaml", false, "if true, yaml marshaling methods will be generated. Default: false")
-	output    = flag.String("output", "", "output file name; default srcdir/<type>_string.go")
+	typeNames       = flag.String("type", "", "comma-separated list of type names; must be set")
+	sql             = flag.Bool("sql", false, "if true, the Scanner and Valuer interface will be implemented.")
+	json            = flag.Bool("json", false, "if true, json marshaling methods will be generated. Default: false")
+	yaml            = flag.Bool("yaml", false, "if true, yaml marshaling methods will be generated. Default: false")
+	output          = flag.String("output", "", "output file name; default srcdir/<type>_string.go")
+	transformMethod = flag.String("transform", "noop", "enum item name transformation method. Default: noop")
 )
 
 // Usage is a replacement usage function for the flags package.
@@ -122,6 +123,7 @@ func main() {
 		dir string
 		g   Generator
 	)
+
 	if len(args) == 1 && isDirectory(args[0]) {
 		dir = args[0]
 		g.parsePackageDir(args[0])
@@ -147,7 +149,7 @@ func main() {
 
 	// Run generate for each type.
 	for _, typeName := range types {
-		g.generate(typeName, *json, *yaml, *sql)
+		g.generate(typeName, *json, *yaml, *sql, *transformMethod)
 	}
 
 	// Format the output.
@@ -282,8 +284,24 @@ func (pkg *Package) check(fs *token.FileSet, astFiles []*ast.File) {
 	pkg.typesPkg = typesPkg
 }
 
+func (g *Generator) transformValueNames(values []Value, transformMethod string) {
+	var transform func(string) string
+	switch transformMethod {
+	case "snake":
+		transform = toSnakeCase
+	case "kebab":
+		transform = toKebabCase
+	default:
+		return
+	}
+
+	for i := range values {
+		values[i].name = transform(values[i].name)
+	}
+}
+
 // generate produces the String method for the named type.
-func (g *Generator) generate(typeName string, includeJSON, includeYAML, includeSQL bool) {
+func (g *Generator) generate(typeName string, includeJSON, includeYAML, includeSQL bool, transformMethod string) {
 	values := make([]Value, 0, 100)
 	for _, file := range g.pkg.files {
 		// Set the state for this run of the walker.
@@ -298,6 +316,9 @@ func (g *Generator) generate(typeName string, includeJSON, includeYAML, includeS
 	if len(values) == 0 {
 		log.Fatalf("no values defined for type %s", typeName)
 	}
+
+	g.transformValueNames(values, transformMethod)
+
 	runs := splitIntoRuns(values)
 	// The decision of which pattern to use depends on the number of
 	// runs in the numbers. If there's only one, it's easy. For more than
@@ -380,7 +401,7 @@ func (g *Generator) format() []byte {
 
 // Value represents a declared constant.
 type Value struct {
-	name string // The name of the constant.
+	name string // The name of the constant after transformation (i.e. camel case => snake case)
 	// The value is stored as a bit pattern alone. The boolean tells us
 	// whether to interpret it as an int64 or a uint64; the only place
 	// this matters is when sorting.
