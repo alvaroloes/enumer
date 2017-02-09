@@ -72,9 +72,9 @@ pillJSON := Aspirin.MarshalJSON()
 The generated code is exactly the same as the Stringer tool plus the mentioned additions, so you can use
 **Enumer** where you are already using **Stringer** without any code change.
 
-## Enum value string representation transformation
+## Transforming the string representation of the enum value
 
-Stringer tool uses the same name for enum value string representation (usually CamelCase in Go).
+By default, Enumer uses the same name of the enum value for generating the string representation (usually CamelCase in Go).
 
 ```go
 type MyType int
@@ -84,15 +84,16 @@ type MyType int
 name := MyTypeValue.String() // name => "MyTypeValue"
 ```
 
-Sometimes you need to use some other string representation format then CamelCase (i.e. in JSON).
+Sometimes you need to use some other string representation format than CamelCase (i.e. in JSON).
  
-To transform enum value string representation from CamelCase to snake_case or kebab-case `transform` flag could be used.
+To transform it from CamelCase to snake_case or kebab-case, you can use the `transform` flag.
 
-For example, for `enumer -type=MyType -json -transform=snake` command the next string representation will be generated:
+For example, the command `enumer -type=MyType -json -transform=snake` would generate the following string representation:
 
 ```go
 name := MyTypeValue.String() // name => "my_type_value"
 ```
+**Note**: The transformation only works form CamelCase to sanake_case or kebab-case, not the other way around.
 
 ## How to use
 The usage of Enumer is the same as Stringer, so you can refer to the [Stringer docs](https://godoc.org/golang.org/x/tools/cmd/stringer)
