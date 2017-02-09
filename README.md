@@ -1,8 +1,8 @@
-#Enumer
+# Enumer
 Enumer is a tool to generate Go code that adds useful methods to Go enums (constants with a specific type).
 It started as a fork of [Rob Pike’s Stringer tool](https://godoc.org/golang.org/x/tools/cmd/stringer).
 
-##Generated functions and methods
+## Generated functions and methods
 When Enumer is applied to a type, it will generate:
 
 * A method `String()` that returns the string representation of the enum value. This makes the enum conform
@@ -72,6 +72,28 @@ pillJSON := Aspirin.MarshalJSON()
 The generated code is exactly the same as the Stringer tool plus the mentioned additions, so you can use
 **Enumer** where you are already using **Stringer** without any code change.
 
+## Enum value string representation transformation
+
+Stringer tool uses the same name for enum value string representation (usually CamelCase in Go).
+
+```go
+type MyType int
+
+ ...
+
+name := MyTypeValue.String() // name => "MyTypeValue"
+```
+
+Sometimes you need to use some other string representation format then CamelCase (i.e. in JSON).
+ 
+To transform enum value string representation from CamelCase to snake_case or kebab-case `transform` flag could be used.
+
+For example, for `enumer -type=MyType -json -transform=snake` command the next string representation will be generated:
+
+```go
+name := MyTypeValue.String() // name => "my_type_value"
+```
+
 ## How to use
 The usage of Enumer is the same as Stringer, so you can refer to the [Stringer docs](https://godoc.org/golang.org/x/tools/cmd/stringer)
 for more information.
@@ -80,6 +102,10 @@ There are three flags added: `json`, `yaml` and `sql`. If the json flag is set t
 the JSON related methods will be generated. Similarly if the yaml flag is set to true,
 the YAML related methods will be generated. And if the sql flag is set to true, the Scanner and Valuer interface will
 be implemented to seamlessly use the enum in a database model.
+
+For enum string representation transformation `transform` flag was added (i.e. `enumer -type=MyType -json -transform=snake`).
+Possible values are `snake` and `kebab` for transformation to snake_case and kebab-case accordingly.
+The default value for `transform` flag is `noop` which means no transformation will be performed.
 
 ## Inspiring projects
 * [Stringer](https://godoc.org/golang.org/x/tools/cmd/stringer)

@@ -33,7 +33,7 @@ func TestEndToEnd(t *testing.T) {
 	defer os.RemoveAll(dir)
 	// Create stringer in temporary directory.
 	stringer := filepath.Join(dir, "stringer.exe")
-	err = run("go", "build", "-o", stringer, "enumer.go", "sql.go", "stringer.go")
+	err = run("go", "build", "-o", stringer, "enumer.go", "sql.go", "stringer.go", "transformer.go")
 	if err != nil {
 		t.Fatalf("building stringer: %s", err)
 	}
@@ -59,13 +59,20 @@ func TestEndToEnd(t *testing.T) {
 		}
 		// Names are known to be ASCII and long enough.
 		typeName := fmt.Sprintf("%c%s", name[0]+'A'-'a', name[1:len(name)-len(".go")])
-		stringerCompileAndRun(t, dir, stringer, typeName, name)
+		transformNameMethod := "noop"
+
+		if name == "transform.go" {
+			typeName = "CamelCaseValue"
+			transformNameMethod = "snake"
+		}
+
+		stringerCompileAndRun(t, dir, stringer, typeName, name, transformNameMethod)
 	}
 }
 
 // stringerCompileAndRun runs stringer for the named file and compiles and
 // runs the target binary in directory dir. That binary will panic if the String method is incorrect.
-func stringerCompileAndRun(t *testing.T, dir, stringer, typeName, fileName string) {
+func stringerCompileAndRun(t *testing.T, dir, stringer, typeName, fileName, transformNameMethod string) {
 	t.Logf("run: %s %s\n", fileName, typeName)
 	source := filepath.Join(dir, fileName)
 	err := copy(source, filepath.Join("testdata", fileName))
@@ -74,7 +81,7 @@ func stringerCompileAndRun(t *testing.T, dir, stringer, typeName, fileName strin
 	}
 	stringSource := filepath.Join(dir, typeName+"_string.go")
 	// Run stringer in temporary directory.
-	err = run(stringer, "-type", typeName, "-output", stringSource, source)
+	err = run(stringer, "-type", typeName, "-output", stringSource, "-transform", transformNameMethod, source)
 	if err != nil {
 		t.Fatal(err)
 	}
