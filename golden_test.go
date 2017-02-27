@@ -16,34 +16,39 @@ import (
 
 // Golden represents a test case.
 type Golden struct {
-	name   string
-	input  string // input; the package clause is provided when running the test.
-	output string // exected output.
+	name       string
+	input      string // input; the package clause is provided when running the test.
+	output     string // exected output.
+	trimPrefix string // the value to pass to trimPrefix
 }
 
 var golden = []Golden{
-	{"day", day_in, day_out},
-	{"offset", offset_in, offset_out},
-	{"gap", gap_in, gap_out},
-	{"num", num_in, num_out},
-	{"unum", unum_in, unum_out},
-	{"prime", prime_in, prime_out},
+	{"day", day_in, day_out, ""},
+	{"offset", offset_in, offset_out, ""},
+	{"gap", gap_in, gap_out, ""},
+	{"num", num_in, num_out, ""},
+	{"unum", unum_in, unum_out, ""},
+	{"prime", prime_in, prime_out, ""},
 }
 
 var goldenJSON = []Golden{
-	{"prime", prime_json_in, prime_json_out},
+	{"prime", prime_json_in, prime_json_out, ""},
 }
 
 var goldenYAML = []Golden{
-	{"prime", prime_yaml_in, prime_yaml_out},
+	{"prime", prime_yaml_in, prime_yaml_out, ""},
 }
 
 var goldenSQL = []Golden{
-	{"prime", prime_sql_in, prime_sql_out},
+	{"prime", prime_sql_in, prime_sql_out, ""},
 }
 
 var goldenJSONAndSQL = []Golden{
-	{"prime", prime_json_and_sql_in, prime_json_and_sql_out},
+	{"prime", prime_json_and_sql_in, prime_json_and_sql_out, ""},
+}
+
+var goldenTrimPrefix = []Golden{
+	{"prime", prime_in, prime_trimmed_out, "p"},
 }
 
 // Each example starts with "type XXX [u]int", with a single space separating them.
@@ -730,6 +735,55 @@ func (i *Prime) Scan(value interface{}) error {
 	return nil
 }
 `
+const prime_trimmed_out = `
+const _Prime_name = "2357111317192329374143"
+
+var _Prime_map = map[Prime]string{
+	2:  _Prime_name[0:1],
+	3:  _Prime_name[1:2],
+	5:  _Prime_name[2:3],
+	7:  _Prime_name[3:4],
+	11: _Prime_name[4:6],
+	13: _Prime_name[6:8],
+	17: _Prime_name[8:10],
+	19: _Prime_name[10:12],
+	23: _Prime_name[12:14],
+	29: _Prime_name[14:16],
+	31: _Prime_name[16:18],
+	41: _Prime_name[18:20],
+	43: _Prime_name[20:22],
+}
+
+func (i Prime) String() string {
+	if str, ok := _Prime_map[i]; ok {
+		return str
+	}
+	return fmt.Sprintf("Prime(%d)", i)
+}
+
+var _PrimeNameToValue_map = map[string]Prime{
+	_Prime_name[0:1]:   2,
+	_Prime_name[1:2]:   3,
+	_Prime_name[2:3]:   5,
+	_Prime_name[3:4]:   7,
+	_Prime_name[4:6]:   11,
+	_Prime_name[6:8]:   13,
+	_Prime_name[8:10]:  17,
+	_Prime_name[10:12]: 19,
+	_Prime_name[12:14]: 23,
+	_Prime_name[14:16]: 29,
+	_Prime_name[16:18]: 31,
+	_Prime_name[18:20]: 41,
+	_Prime_name[20:22]: 43,
+}
+
+func PrimeString(s string) (Prime, error) {
+	if val, ok := _PrimeNameToValue_map[s]; ok {
+		return val, nil
+	}
+	return 0, fmt.Errorf("%s does not belong to Prime values", s)
+}
+`
 
 func TestGolden(t *testing.T) {
 	for _, test := range golden {
@@ -747,6 +801,9 @@ func TestGolden(t *testing.T) {
 	for _, test := range goldenJSONAndSQL {
 		runGoldenTest(t, test, true, false, true)
 	}
+	for _, test := range goldenTrimPrefix {
+		runGoldenTest(t, test, false, false, false)
+	}
 }
 
 func runGoldenTest(t *testing.T, test Golden, generateJSON, generateYAML, generateSQL bool) {
@@ -759,7 +816,7 @@ func runGoldenTest(t *testing.T, test Golden, generateJSON, generateYAML, genera
 	if len(tokens) != 3 {
 		t.Fatalf("%s: need type declaration on first line", test.name)
 	}
-	g.generate(tokens[1], generateJSON, generateYAML, generateSQL, "noop")
+	g.generate(tokens[1], generateJSON, generateYAML, generateSQL, "noop", test.trimPrefix)
 	got := string(g.format())
 	if got != test.output {
 		t.Errorf("%s: got\n====\n%s====\nexpected\n====%s", test.name, got, test.output)
