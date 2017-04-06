@@ -16,7 +16,8 @@ the enum conform to the `json.Marshaler` and `json.Unmarshaler` interfaces. Very
 * When the flag `yaml` is provided, two additional methods will be generated, `MarshalYAML()` and `UnmarshalYAML()`. These make
 the enum conform to the `gopkg.in/yaml.v2.Marshaler` and `gopkg.in/yaml.v2.Unmarshaler` interfaces.
 * When the flag `sql` is provided, the methods for implementing the Scanner and Valuer interfaces will be also generated.
-Useful when storing the enum in a database.
+Useful when storing the enum in a database. Also a `<Type>SqlEnumString()` method will be generated which will return all 
+the enums separated by comma. This is provided to be used for sql statements like `CHECK` or `IN`.
 
 For example, if we have an enum type called `Pill`,
 ```go

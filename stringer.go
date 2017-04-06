@@ -141,6 +141,7 @@ func main() {
 	g.Printf("\t\"fmt\"\n")
 	if *sql {
 		g.Printf("\t\"database/sql/driver\"\n")
+		g.Printf("\t\"strings\"\n")
 	}
 	if *json {
 		g.Printf("\t\"encoding/json\"\n")
@@ -350,7 +351,7 @@ func (g *Generator) generate(typeName string, includeJSON, includeYAML, includeS
 		g.buildYAMLMethods(runs, typeName, runsThreshold)
 	}
 	if includeSQL {
-		g.addValueAndScanMethod(typeName)
+		g.addSQLMethods(typeName)
 	}
 }
 
