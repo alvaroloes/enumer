@@ -12,6 +12,28 @@ const stringValueToNameMap = `func %[1]sString(s string) (%[1]s, error) {
 }
 `
 
+const listMethod = `
+func %[1]sList() []%[1]s {
+	list := make([]%[1]s, len(_%[1]sNameToValue_map))
+	idx := 0
+	for _, v := range _%[1]sNameToValue_map {
+		list[idx] = v
+		idx++
+	}
+	return list
+}
+
+func %[1]sListString() []string {
+	list := make([]string, len(_%[1]sNameToValue_map))
+	idx := 0
+	for k := range _%[1]sNameToValue_map {
+		list[idx] = k
+		idx++
+	}
+	return list
+}
+`
+
 func (g *Generator) buildValueToNameMap(runs [][]Value, typeName string, runsThreshold int) {
 	// At this moment, either "g.declareIndexAndNameVars()" or "g.declareNameVars()" has been called
 	g.Printf("\nvar _%sNameToValue_map = map[string]%s{\n", typeName, typeName)
@@ -33,6 +55,7 @@ func (g *Generator) buildValueToNameMap(runs [][]Value, typeName string, runsThr
 	}
 	g.Printf("}\n\n")
 	g.Printf(stringValueToNameMap, typeName)
+	g.Printf(listMethod, typeName)
 }
 
 // Arguments to format are:

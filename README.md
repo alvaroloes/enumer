@@ -11,6 +11,8 @@ the `Stringer` interface, so whenever you print an enum value, you'll get the st
 when you need to read enum values from command line arguments, from a configuration file, or
 from a REST API request... In short, from those places where using the real enum value (an integer) would
 be almost meaningless or hard to trace or use by a human.
+* A function `<Type>List() []<Type>` to get a list of the enums.
+* A function `<Type>ListString() []string` to get a list of the string representation of the enums.
 * When the flag `json` is provided, two additional methods will be generated, `MarshalJSON()` and `UnmarshalJSON()`. These make
 the enum conform to the `json.Marshaler` and `json.Unmarshaler` interfaces. Very useful to use it in JSON APIs.
 * When the flag `yaml` is provided, two additional methods will be generated, `MarshalYAML()` and `UnmarshalYAML()`. These make
