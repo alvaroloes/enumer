@@ -104,9 +104,15 @@ the JSON related methods will be generated. Similarly if the yaml flag is set to
 the YAML related methods will be generated. And if the sql flag is set to true, the Scanner and Valuer interface will
 be implemented to seamlessly use the enum in a database model.
 
-For enum string representation transformation `transform` flag was added (i.e. `enumer -type=MyType -json -transform=snake`).
-Possible values are `snake` and `kebab` for transformation to snake_case and kebab-case accordingly.
+For enum string representation transformation the `transform`, `trimprefix` and `autotrimprefix` flags
+were added (i.e. `enumer -type=MyType -json -transform=snake`).
+Possible transform values are `snake` and `kebab` for transformation to snake_case and kebab-case accordingly.
 The default value for `transform` flag is `noop` which means no transformation will be performed.
+
+If a prefix is provided via the `trimprefix` flag that will be trimmed from the start of each name (before
+it is transformed). If a name doesn't have the prefix it will be passed unchanged.
+
+If the `autotrimprefix` flag is set then if all the names in an enum have a common prefix that prefix will be removed.
 
 ## Inspiring projects
 * [Stringer](https://godoc.org/golang.org/x/tools/cmd/stringer)

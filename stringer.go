@@ -87,6 +87,8 @@ var (
 	yaml            = flag.Bool("yaml", false, "if true, yaml marshaling methods will be generated. Default: false")
 	output          = flag.String("output", "", "output file name; default srcdir/<type>_string.go")
 	transformMethod = flag.String("transform", "noop", "enum item name transformation method. Default: noop")
+	trimPrefix      = flag.String("trimprefix", "", "transform each item name by removing a prefix. Default: \"\"")
+	autoTrimPrefix  = flag.Bool("autotrimprefix", false, "if true, remove a common prefix from each item name. Default: false")
 )
 
 // Usage is a replacement usage function for the flags package.
@@ -149,7 +151,7 @@ func main() {
 
 	// Run generate for each type.
 	for _, typeName := range types {
-		g.generate(typeName, *json, *yaml, *sql, *transformMethod)
+		g.generate(typeName, *json, *yaml, *sql, *transformMethod, *trimPrefix, *autoTrimPrefix)
 	}
 
 	// Format the output.
@@ -301,7 +303,7 @@ func (g *Generator) transformValueNames(values []Value, transformMethod string) 
 }
 
 // generate produces the String method for the named type.
-func (g *Generator) generate(typeName string, includeJSON, includeYAML, includeSQL bool, transformMethod string) {
+func (g *Generator) generate(typeName string, includeJSON, includeYAML, includeSQL bool, transformMethod string, trimPrefix string, autoTrimPrefix bool) {
 	values := make([]Value, 0, 100)
 	for _, file := range g.pkg.files {
 		// Set the state for this run of the walker.
@@ -315,6 +317,12 @@ func (g *Generator) generate(typeName string, includeJSON, includeYAML, includeS
 
 	if len(values) == 0 {
 		log.Fatalf("no values defined for type %s", typeName)
+	}
+
+	g.trimValueNames(values, trimPrefix)
+
+	if autoTrimPrefix {
+		g.autoTrimValueNames(values)
 	}
 
 	g.transformValueNames(values, transformMethod)
