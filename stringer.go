@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// +build go1.5
-
 // Stringer is a tool to automate the creation of methods that satisfy the fmt.Stringer
 // interface. Given the name of a (signed or unsigned) integer type T that has constants
 // defined, stringer will create a new self-contained Go source file implementing
@@ -68,7 +66,6 @@ import (
 	"go/build"
 	exact "go/constant"
 	"go/format"
-	"go/importer"
 	"go/parser"
 	"go/token"
 	"go/types"
@@ -123,7 +120,6 @@ func main() {
 		dir string
 		g   Generator
 	)
-
 	if len(args) == 1 && isDirectory(args[0]) {
 		dir = args[0]
 		g.parsePackageDir(args[0])
@@ -158,7 +154,7 @@ func main() {
 	// Write to file.
 	outputName := *output
 	if outputName == "" {
-		baseName := fmt.Sprintf("%s_string.go", types[0])
+		baseName := fmt.Sprintf("%s_enumer.go", types[0])
 		outputName = filepath.Join(dir, strings.ToLower(baseName))
 	}
 	err := ioutil.WriteFile(outputName, src, 0644)
@@ -273,7 +269,7 @@ func (g *Generator) parsePackage(directory string, names []string, text interfac
 // check type-checks the package. The package must be OK to proceed.
 func (pkg *Package) check(fs *token.FileSet, astFiles []*ast.File) {
 	pkg.defs = make(map[*ast.Ident]types.Object)
-	config := types.Config{Importer: importer.Default(), FakeImportC: true}
+	config := types.Config{Importer: defaultImporter(), FakeImportC: true}
 	info := &types.Info{
 		Defs: pkg.defs,
 	}
