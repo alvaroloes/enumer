@@ -85,7 +85,7 @@ name := MyTypeValue.String() // name => "MyTypeValue"
 ```
 
 Sometimes you need to use some other string representation format than CamelCase (i.e. in JSON).
- 
+
 To transform it from CamelCase to snake_case or kebab-case, you can use the `transform` flag.
 
 For example, the command `enumer -type=MyType -json -transform=snake` would generate the following string representation:
@@ -107,6 +107,9 @@ be implemented to seamlessly use the enum in a database model.
 For enum string representation transformation `transform` flag was added (i.e. `enumer -type=MyType -json -transform=snake`).
 Possible values are `snake` and `kebab` for transformation to snake_case and kebab-case accordingly.
 The default value for `transform` flag is `noop` which means no transformation will be performed.
+
+## Known issues
+If you get an error like "enumer: checking package: x.go:1:2: foo not declared by package bar", try reinstalling the packages with `go install $(go list ./... | grep -v /vendor/)` and the re-run the generator. It's using the installed packages rather than the source.
 
 ## Inspiring projects
 * [Stringer](https://godoc.org/golang.org/x/tools/cmd/stringer)
