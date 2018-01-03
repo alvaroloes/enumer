@@ -62,29 +62,29 @@ const (
 `
 
 const day_out = `
-const _Day_name = "MondayTuesdayWednesdayThursdayFridaySaturdaySunday"
+const _DayName = "MondayTuesdayWednesdayThursdayFridaySaturdaySunday"
 
-var _Day_index = [...]uint8{0, 6, 13, 22, 30, 36, 44, 50}
+var _DayIndex = [...]uint8{0, 6, 13, 22, 30, 36, 44, 50}
 
 func (i Day) String() string {
-	if i < 0 || i >= Day(len(_Day_index)-1) {
+	if i < 0 || i >= Day(len(_DayIndex)-1) {
 		return fmt.Sprintf("Day(%d)", i)
 	}
-	return _Day_name[_Day_index[i]:_Day_index[i+1]]
+	return _DayName[_DayIndex[i]:_DayIndex[i+1]]
 }
 
-var _DayNameToValue_map = map[string]Day{
-	_Day_name[0:6]:   0,
-	_Day_name[6:13]:  1,
-	_Day_name[13:22]: 2,
-	_Day_name[22:30]: 3,
-	_Day_name[30:36]: 4,
-	_Day_name[36:44]: 5,
-	_Day_name[44:50]: 6,
+var _DayNameToValueMap = map[string]Day{
+	_DayName[0:6]:   0,
+	_DayName[6:13]:  1,
+	_DayName[13:22]: 2,
+	_DayName[22:30]: 3,
+	_DayName[30:36]: 4,
+	_DayName[36:44]: 5,
+	_DayName[44:50]: 6,
 }
 
 func DayString(s string) (Day, error) {
-	if val, ok := _DayNameToValue_map[s]; ok {
+	if val, ok := _DayNameToValueMap[s]; ok {
 		return val, nil
 	}
 	return 0, fmt.Errorf("%s does not belong to Day values", s)
@@ -104,26 +104,26 @@ const (
 `
 
 const offset_out = `
-const _Number_name = "OneTwoThree"
+const _NumberName = "OneTwoThree"
 
-var _Number_index = [...]uint8{0, 3, 6, 11}
+var _NumberIndex = [...]uint8{0, 3, 6, 11}
 
 func (i Number) String() string {
 	i -= 1
-	if i < 0 || i >= Number(len(_Number_index)-1) {
+	if i < 0 || i >= Number(len(_NumberIndex)-1) {
 		return fmt.Sprintf("Number(%d)", i+1)
 	}
-	return _Number_name[_Number_index[i]:_Number_index[i+1]]
+	return _NumberName[_NumberIndex[i]:_NumberIndex[i+1]]
 }
 
-var _NumberNameToValue_map = map[string]Number{
-	_Number_name[0:3]:  1,
-	_Number_name[3:6]:  2,
-	_Number_name[6:11]: 3,
+var _NumberNameToValueMap = map[string]Number{
+	_NumberName[0:3]:  1,
+	_NumberName[3:6]:  2,
+	_NumberName[6:11]: 3,
 }
 
 func NumberString(s string) (Number, error) {
-	if val, ok := _NumberNameToValue_map[s]; ok {
+	if val, ok := _NumberNameToValueMap[s]; ok {
 		return val, nil
 	}
 	return 0, fmt.Errorf("%s does not belong to Number values", s)
@@ -146,45 +146,45 @@ const (
 
 const gap_out = `
 const (
-	_Gap_name_0 = "TwoThree"
-	_Gap_name_1 = "FiveSixSevenEightNine"
-	_Gap_name_2 = "Eleven"
+	_GapName_0 = "TwoThree"
+	_GapName_1 = "FiveSixSevenEightNine"
+	_GapName_2 = "Eleven"
 )
 
 var (
-	_Gap_index_0 = [...]uint8{0, 3, 8}
-	_Gap_index_1 = [...]uint8{0, 4, 7, 12, 17, 21}
-	_Gap_index_2 = [...]uint8{0, 6}
+	_GapIndex_0 = [...]uint8{0, 3, 8}
+	_GapIndex_1 = [...]uint8{0, 4, 7, 12, 17, 21}
+	_GapIndex_2 = [...]uint8{0, 6}
 )
 
 func (i Gap) String() string {
 	switch {
 	case 2 <= i && i <= 3:
 		i -= 2
-		return _Gap_name_0[_Gap_index_0[i]:_Gap_index_0[i+1]]
+		return _GapName_0[_GapIndex_0[i]:_GapIndex_0[i+1]]
 	case 5 <= i && i <= 9:
 		i -= 5
-		return _Gap_name_1[_Gap_index_1[i]:_Gap_index_1[i+1]]
+		return _GapName_1[_GapIndex_1[i]:_GapIndex_1[i+1]]
 	case i == 11:
-		return _Gap_name_2
+		return _GapName_2
 	default:
 		return fmt.Sprintf("Gap(%d)", i)
 	}
 }
 
-var _GapNameToValue_map = map[string]Gap{
-	_Gap_name_0[0:3]:   2,
-	_Gap_name_0[3:8]:   3,
-	_Gap_name_1[0:4]:   5,
-	_Gap_name_1[4:7]:   6,
-	_Gap_name_1[7:12]:  7,
-	_Gap_name_1[12:17]: 8,
-	_Gap_name_1[17:21]: 9,
-	_Gap_name_2[0:6]:   11,
+var _GapNameToValueMap = map[string]Gap{
+	_GapName_0[0:3]:   2,
+	_GapName_0[3:8]:   3,
+	_GapName_1[0:4]:   5,
+	_GapName_1[4:7]:   6,
+	_GapName_1[7:12]:  7,
+	_GapName_1[12:17]: 8,
+	_GapName_1[17:21]: 9,
+	_GapName_2[0:6]:   11,
 }
 
 func GapString(s string) (Gap, error) {
-	if val, ok := _GapNameToValue_map[s]; ok {
+	if val, ok := _GapNameToValueMap[s]; ok {
 		return val, nil
 	}
 	return 0, fmt.Errorf("%s does not belong to Gap values", s)
@@ -203,28 +203,28 @@ const (
 `
 
 const num_out = `
-const _Num_name = "m_2m_1m0m1m2"
+const _NumName = "m_2m_1m0m1m2"
 
-var _Num_index = [...]uint8{0, 3, 6, 8, 10, 12}
+var _NumIndex = [...]uint8{0, 3, 6, 8, 10, 12}
 
 func (i Num) String() string {
 	i -= -2
-	if i < 0 || i >= Num(len(_Num_index)-1) {
+	if i < 0 || i >= Num(len(_NumIndex)-1) {
 		return fmt.Sprintf("Num(%d)", i+-2)
 	}
-	return _Num_name[_Num_index[i]:_Num_index[i+1]]
+	return _NumName[_NumIndex[i]:_NumIndex[i+1]]
 }
 
-var _NumNameToValue_map = map[string]Num{
-	_Num_name[0:3]:   -2,
-	_Num_name[3:6]:   -1,
-	_Num_name[6:8]:   0,
-	_Num_name[8:10]:  1,
-	_Num_name[10:12]: 2,
+var _NumNameToValueMap = map[string]Num{
+	_NumName[0:3]:   -2,
+	_NumName[3:6]:   -1,
+	_NumName[6:8]:   0,
+	_NumName[8:10]:  1,
+	_NumName[10:12]: 2,
 }
 
 func NumString(s string) (Num, error) {
-	if val, ok := _NumNameToValue_map[s]; ok {
+	if val, ok := _NumNameToValueMap[s]; ok {
 		return val, nil
 	}
 	return 0, fmt.Errorf("%s does not belong to Num values", s)
@@ -247,37 +247,37 @@ const (
 
 const unum_out = `
 const (
-	_Unum_name_0 = "m0m1m2"
-	_Unum_name_1 = "m_2m_1"
+	_UnumName_0 = "m0m1m2"
+	_UnumName_1 = "m_2m_1"
 )
 
 var (
-	_Unum_index_0 = [...]uint8{0, 2, 4, 6}
-	_Unum_index_1 = [...]uint8{0, 3, 6}
+	_UnumIndex_0 = [...]uint8{0, 2, 4, 6}
+	_UnumIndex_1 = [...]uint8{0, 3, 6}
 )
 
 func (i Unum) String() string {
 	switch {
 	case 0 <= i && i <= 2:
-		return _Unum_name_0[_Unum_index_0[i]:_Unum_index_0[i+1]]
+		return _UnumName_0[_UnumIndex_0[i]:_UnumIndex_0[i+1]]
 	case 253 <= i && i <= 254:
 		i -= 253
-		return _Unum_name_1[_Unum_index_1[i]:_Unum_index_1[i+1]]
+		return _UnumName_1[_UnumIndex_1[i]:_UnumIndex_1[i+1]]
 	default:
 		return fmt.Sprintf("Unum(%d)", i)
 	}
 }
 
-var _UnumNameToValue_map = map[string]Unum{
-	_Unum_name_0[0:2]: 0,
-	_Unum_name_0[2:4]: 1,
-	_Unum_name_0[4:6]: 2,
-	_Unum_name_1[0:3]: 253,
-	_Unum_name_1[3:6]: 254,
+var _UnumNameToValueMap = map[string]Unum{
+	_UnumName_0[0:2]: 0,
+	_UnumName_0[2:4]: 1,
+	_UnumName_0[4:6]: 2,
+	_UnumName_1[0:3]: 253,
+	_UnumName_1[3:6]: 254,
 }
 
 func UnumString(s string) (Unum, error) {
-	if val, ok := _UnumNameToValue_map[s]; ok {
+	if val, ok := _UnumNameToValueMap[s]; ok {
 		return val, nil
 	}
 	return 0, fmt.Errorf("%s does not belong to Unum values", s)
@@ -306,49 +306,49 @@ const (
 `
 
 const prime_out = `
-const _Prime_name = "p2p3p5p7p11p13p17p19p23p29p37p41p43"
+const _PrimeName = "p2p3p5p7p11p13p17p19p23p29p37p41p43"
 
-var _Prime_map = map[Prime]string{
-	2:  _Prime_name[0:2],
-	3:  _Prime_name[2:4],
-	5:  _Prime_name[4:6],
-	7:  _Prime_name[6:8],
-	11: _Prime_name[8:11],
-	13: _Prime_name[11:14],
-	17: _Prime_name[14:17],
-	19: _Prime_name[17:20],
-	23: _Prime_name[20:23],
-	29: _Prime_name[23:26],
-	31: _Prime_name[26:29],
-	41: _Prime_name[29:32],
-	43: _Prime_name[32:35],
+var _PrimeMap = map[Prime]string{
+	2:  _PrimeName[0:2],
+	3:  _PrimeName[2:4],
+	5:  _PrimeName[4:6],
+	7:  _PrimeName[6:8],
+	11: _PrimeName[8:11],
+	13: _PrimeName[11:14],
+	17: _PrimeName[14:17],
+	19: _PrimeName[17:20],
+	23: _PrimeName[20:23],
+	29: _PrimeName[23:26],
+	31: _PrimeName[26:29],
+	41: _PrimeName[29:32],
+	43: _PrimeName[32:35],
 }
 
 func (i Prime) String() string {
-	if str, ok := _Prime_map[i]; ok {
+	if str, ok := _PrimeMap[i]; ok {
 		return str
 	}
 	return fmt.Sprintf("Prime(%d)", i)
 }
 
-var _PrimeNameToValue_map = map[string]Prime{
-	_Prime_name[0:2]:   2,
-	_Prime_name[2:4]:   3,
-	_Prime_name[4:6]:   5,
-	_Prime_name[6:8]:   7,
-	_Prime_name[8:11]:  11,
-	_Prime_name[11:14]: 13,
-	_Prime_name[14:17]: 17,
-	_Prime_name[17:20]: 19,
-	_Prime_name[20:23]: 23,
-	_Prime_name[23:26]: 29,
-	_Prime_name[26:29]: 31,
-	_Prime_name[29:32]: 41,
-	_Prime_name[32:35]: 43,
+var _PrimeNameToValueMap = map[string]Prime{
+	_PrimeName[0:2]:   2,
+	_PrimeName[2:4]:   3,
+	_PrimeName[4:6]:   5,
+	_PrimeName[6:8]:   7,
+	_PrimeName[8:11]:  11,
+	_PrimeName[11:14]: 13,
+	_PrimeName[14:17]: 17,
+	_PrimeName[17:20]: 19,
+	_PrimeName[20:23]: 23,
+	_PrimeName[23:26]: 29,
+	_PrimeName[26:29]: 31,
+	_PrimeName[29:32]: 41,
+	_PrimeName[32:35]: 43,
 }
 
 func PrimeString(s string) (Prime, error) {
-	if val, ok := _PrimeNameToValue_map[s]; ok {
+	if val, ok := _PrimeNameToValueMap[s]; ok {
 		return val, nil
 	}
 	return 0, fmt.Errorf("%s does not belong to Prime values", s)
@@ -374,49 +374,49 @@ const (
 `
 
 const prime_json_out = `
-const _Prime_name = "p2p3p5p7p11p13p17p19p23p29p37p41p43"
+const _PrimeName = "p2p3p5p7p11p13p17p19p23p29p37p41p43"
 
-var _Prime_map = map[Prime]string{
-	2:  _Prime_name[0:2],
-	3:  _Prime_name[2:4],
-	5:  _Prime_name[4:6],
-	7:  _Prime_name[6:8],
-	11: _Prime_name[8:11],
-	13: _Prime_name[11:14],
-	17: _Prime_name[14:17],
-	19: _Prime_name[17:20],
-	23: _Prime_name[20:23],
-	29: _Prime_name[23:26],
-	31: _Prime_name[26:29],
-	41: _Prime_name[29:32],
-	43: _Prime_name[32:35],
+var _PrimeMap = map[Prime]string{
+	2:  _PrimeName[0:2],
+	3:  _PrimeName[2:4],
+	5:  _PrimeName[4:6],
+	7:  _PrimeName[6:8],
+	11: _PrimeName[8:11],
+	13: _PrimeName[11:14],
+	17: _PrimeName[14:17],
+	19: _PrimeName[17:20],
+	23: _PrimeName[20:23],
+	29: _PrimeName[23:26],
+	31: _PrimeName[26:29],
+	41: _PrimeName[29:32],
+	43: _PrimeName[32:35],
 }
 
 func (i Prime) String() string {
-	if str, ok := _Prime_map[i]; ok {
+	if str, ok := _PrimeMap[i]; ok {
 		return str
 	}
 	return fmt.Sprintf("Prime(%d)", i)
 }
 
-var _PrimeNameToValue_map = map[string]Prime{
-	_Prime_name[0:2]:   2,
-	_Prime_name[2:4]:   3,
-	_Prime_name[4:6]:   5,
-	_Prime_name[6:8]:   7,
-	_Prime_name[8:11]:  11,
-	_Prime_name[11:14]: 13,
-	_Prime_name[14:17]: 17,
-	_Prime_name[17:20]: 19,
-	_Prime_name[20:23]: 23,
-	_Prime_name[23:26]: 29,
-	_Prime_name[26:29]: 31,
-	_Prime_name[29:32]: 41,
-	_Prime_name[32:35]: 43,
+var _PrimeNameToValueMap = map[string]Prime{
+	_PrimeName[0:2]:   2,
+	_PrimeName[2:4]:   3,
+	_PrimeName[4:6]:   5,
+	_PrimeName[6:8]:   7,
+	_PrimeName[8:11]:  11,
+	_PrimeName[11:14]: 13,
+	_PrimeName[14:17]: 17,
+	_PrimeName[17:20]: 19,
+	_PrimeName[20:23]: 23,
+	_PrimeName[23:26]: 29,
+	_PrimeName[26:29]: 31,
+	_PrimeName[29:32]: 41,
+	_PrimeName[32:35]: 43,
 }
 
 func PrimeString(s string) (Prime, error) {
-	if val, ok := _PrimeNameToValue_map[s]; ok {
+	if val, ok := _PrimeNameToValueMap[s]; ok {
 		return val, nil
 	}
 	return 0, fmt.Errorf("%s does not belong to Prime values", s)
@@ -458,49 +458,49 @@ const (
 `
 
 const prime_yaml_out = `
-const _Prime_name = "p2p3p5p7p11p13p17p19p23p29p37p41p43"
+const _PrimeName = "p2p3p5p7p11p13p17p19p23p29p37p41p43"
 
-var _Prime_map = map[Prime]string{
-	2:  _Prime_name[0:2],
-	3:  _Prime_name[2:4],
-	5:  _Prime_name[4:6],
-	7:  _Prime_name[6:8],
-	11: _Prime_name[8:11],
-	13: _Prime_name[11:14],
-	17: _Prime_name[14:17],
-	19: _Prime_name[17:20],
-	23: _Prime_name[20:23],
-	29: _Prime_name[23:26],
-	31: _Prime_name[26:29],
-	41: _Prime_name[29:32],
-	43: _Prime_name[32:35],
+var _PrimeMap = map[Prime]string{
+	2:  _PrimeName[0:2],
+	3:  _PrimeName[2:4],
+	5:  _PrimeName[4:6],
+	7:  _PrimeName[6:8],
+	11: _PrimeName[8:11],
+	13: _PrimeName[11:14],
+	17: _PrimeName[14:17],
+	19: _PrimeName[17:20],
+	23: _PrimeName[20:23],
+	29: _PrimeName[23:26],
+	31: _PrimeName[26:29],
+	41: _PrimeName[29:32],
+	43: _PrimeName[32:35],
 }
 
 func (i Prime) String() string {
-	if str, ok := _Prime_map[i]; ok {
+	if str, ok := _PrimeMap[i]; ok {
 		return str
 	}
 	return fmt.Sprintf("Prime(%d)", i)
 }
 
-var _PrimeNameToValue_map = map[string]Prime{
-	_Prime_name[0:2]:   2,
-	_Prime_name[2:4]:   3,
-	_Prime_name[4:6]:   5,
-	_Prime_name[6:8]:   7,
-	_Prime_name[8:11]:  11,
-	_Prime_name[11:14]: 13,
-	_Prime_name[14:17]: 17,
-	_Prime_name[17:20]: 19,
-	_Prime_name[20:23]: 23,
-	_Prime_name[23:26]: 29,
-	_Prime_name[26:29]: 31,
-	_Prime_name[29:32]: 41,
-	_Prime_name[32:35]: 43,
+var _PrimeNameToValueMap = map[string]Prime{
+	_PrimeName[0:2]:   2,
+	_PrimeName[2:4]:   3,
+	_PrimeName[4:6]:   5,
+	_PrimeName[6:8]:   7,
+	_PrimeName[8:11]:  11,
+	_PrimeName[11:14]: 13,
+	_PrimeName[14:17]: 17,
+	_PrimeName[17:20]: 19,
+	_PrimeName[20:23]: 23,
+	_PrimeName[23:26]: 29,
+	_PrimeName[26:29]: 31,
+	_PrimeName[29:32]: 41,
+	_PrimeName[32:35]: 43,
 }
 
 func PrimeString(s string) (Prime, error) {
-	if val, ok := _PrimeNameToValue_map[s]; ok {
+	if val, ok := _PrimeNameToValueMap[s]; ok {
 		return val, nil
 	}
 	return 0, fmt.Errorf("%s does not belong to Prime values", s)
@@ -542,49 +542,49 @@ const (
 `
 
 const prime_sql_out = `
-const _Prime_name = "p2p3p5p7p11p13p17p19p23p29p37p41p43"
+const _PrimeName = "p2p3p5p7p11p13p17p19p23p29p37p41p43"
 
-var _Prime_map = map[Prime]string{
-	2:  _Prime_name[0:2],
-	3:  _Prime_name[2:4],
-	5:  _Prime_name[4:6],
-	7:  _Prime_name[6:8],
-	11: _Prime_name[8:11],
-	13: _Prime_name[11:14],
-	17: _Prime_name[14:17],
-	19: _Prime_name[17:20],
-	23: _Prime_name[20:23],
-	29: _Prime_name[23:26],
-	31: _Prime_name[26:29],
-	41: _Prime_name[29:32],
-	43: _Prime_name[32:35],
+var _PrimeMap = map[Prime]string{
+	2:  _PrimeName[0:2],
+	3:  _PrimeName[2:4],
+	5:  _PrimeName[4:6],
+	7:  _PrimeName[6:8],
+	11: _PrimeName[8:11],
+	13: _PrimeName[11:14],
+	17: _PrimeName[14:17],
+	19: _PrimeName[17:20],
+	23: _PrimeName[20:23],
+	29: _PrimeName[23:26],
+	31: _PrimeName[26:29],
+	41: _PrimeName[29:32],
+	43: _PrimeName[32:35],
 }
 
 func (i Prime) String() string {
-	if str, ok := _Prime_map[i]; ok {
+	if str, ok := _PrimeMap[i]; ok {
 		return str
 	}
 	return fmt.Sprintf("Prime(%d)", i)
 }
 
-var _PrimeNameToValue_map = map[string]Prime{
-	_Prime_name[0:2]:   2,
-	_Prime_name[2:4]:   3,
-	_Prime_name[4:6]:   5,
-	_Prime_name[6:8]:   7,
-	_Prime_name[8:11]:  11,
-	_Prime_name[11:14]: 13,
-	_Prime_name[14:17]: 17,
-	_Prime_name[17:20]: 19,
-	_Prime_name[20:23]: 23,
-	_Prime_name[23:26]: 29,
-	_Prime_name[26:29]: 31,
-	_Prime_name[29:32]: 41,
-	_Prime_name[32:35]: 43,
+var _PrimeNameToValueMap = map[string]Prime{
+	_PrimeName[0:2]:   2,
+	_PrimeName[2:4]:   3,
+	_PrimeName[4:6]:   5,
+	_PrimeName[6:8]:   7,
+	_PrimeName[8:11]:  11,
+	_PrimeName[11:14]: 13,
+	_PrimeName[14:17]: 17,
+	_PrimeName[17:20]: 19,
+	_PrimeName[20:23]: 23,
+	_PrimeName[23:26]: 29,
+	_PrimeName[26:29]: 31,
+	_PrimeName[29:32]: 41,
+	_PrimeName[32:35]: 43,
 }
 
 func PrimeString(s string) (Prime, error) {
-	if val, ok := _PrimeNameToValue_map[s]; ok {
+	if val, ok := _PrimeNameToValueMap[s]; ok {
 		return val, nil
 	}
 	return 0, fmt.Errorf("%s does not belong to Prime values", s)
@@ -639,49 +639,49 @@ const (
 `
 
 const prime_json_and_sql_out = `
-const _Prime_name = "p2p3p5p7p11p13p17p19p23p29p37p41p43"
+const _PrimeName = "p2p3p5p7p11p13p17p19p23p29p37p41p43"
 
-var _Prime_map = map[Prime]string{
-	2:  _Prime_name[0:2],
-	3:  _Prime_name[2:4],
-	5:  _Prime_name[4:6],
-	7:  _Prime_name[6:8],
-	11: _Prime_name[8:11],
-	13: _Prime_name[11:14],
-	17: _Prime_name[14:17],
-	19: _Prime_name[17:20],
-	23: _Prime_name[20:23],
-	29: _Prime_name[23:26],
-	31: _Prime_name[26:29],
-	41: _Prime_name[29:32],
-	43: _Prime_name[32:35],
+var _PrimeMap = map[Prime]string{
+	2:  _PrimeName[0:2],
+	3:  _PrimeName[2:4],
+	5:  _PrimeName[4:6],
+	7:  _PrimeName[6:8],
+	11: _PrimeName[8:11],
+	13: _PrimeName[11:14],
+	17: _PrimeName[14:17],
+	19: _PrimeName[17:20],
+	23: _PrimeName[20:23],
+	29: _PrimeName[23:26],
+	31: _PrimeName[26:29],
+	41: _PrimeName[29:32],
+	43: _PrimeName[32:35],
 }
 
 func (i Prime) String() string {
-	if str, ok := _Prime_map[i]; ok {
+	if str, ok := _PrimeMap[i]; ok {
 		return str
 	}
 	return fmt.Sprintf("Prime(%d)", i)
 }
 
-var _PrimeNameToValue_map = map[string]Prime{
-	_Prime_name[0:2]:   2,
-	_Prime_name[2:4]:   3,
-	_Prime_name[4:6]:   5,
-	_Prime_name[6:8]:   7,
-	_Prime_name[8:11]:  11,
-	_Prime_name[11:14]: 13,
-	_Prime_name[14:17]: 17,
-	_Prime_name[17:20]: 19,
-	_Prime_name[20:23]: 23,
-	_Prime_name[23:26]: 29,
-	_Prime_name[26:29]: 31,
-	_Prime_name[29:32]: 41,
-	_Prime_name[32:35]: 43,
+var _PrimeNameToValueMap = map[string]Prime{
+	_PrimeName[0:2]:   2,
+	_PrimeName[2:4]:   3,
+	_PrimeName[4:6]:   5,
+	_PrimeName[6:8]:   7,
+	_PrimeName[8:11]:  11,
+	_PrimeName[11:14]: 13,
+	_PrimeName[14:17]: 17,
+	_PrimeName[17:20]: 19,
+	_PrimeName[20:23]: 23,
+	_PrimeName[23:26]: 29,
+	_PrimeName[26:29]: 31,
+	_PrimeName[29:32]: 41,
+	_PrimeName[32:35]: 43,
 }
 
 func PrimeString(s string) (Prime, error) {
-	if val, ok := _PrimeNameToValue_map[s]; ok {
+	if val, ok := _PrimeNameToValueMap[s]; ok {
 		return val, nil
 	}
 	return 0, fmt.Errorf("%s does not belong to Prime values", s)
