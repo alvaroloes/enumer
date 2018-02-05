@@ -78,6 +78,8 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+
+	"github.com/pascaldekloe/name"
 )
 
 var (
@@ -285,18 +287,18 @@ func (pkg *Package) check(fs *token.FileSet, astFiles []*ast.File) {
 }
 
 func (g *Generator) transformValueNames(values []Value, transformMethod string) {
-	var transform func(string) string
+	var sep rune
 	switch transformMethod {
 	case "snake":
-		transform = toSnakeCase
+		sep = '_'
 	case "kebab":
-		transform = toKebabCase
+		sep = '-'
 	default:
 		return
 	}
 
 	for i := range values {
-		values[i].name = transform(values[i].name)
+		values[i].name = strings.ToLower(name.Delimit(values[i].name, sep))
 	}
 }
 
