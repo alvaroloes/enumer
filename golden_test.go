@@ -83,6 +83,8 @@ var _DayNameToValueMap = map[string]Day{
 	_DayName[44:50]: 6,
 }
 
+// DayString retrieves an enum value from the enum constants string name.
+// Throws an error if the param is not part of the enum.
 func DayString(s string) (Day, error) {
 	if val, ok := _DayNameToValueMap[s]; ok {
 		return val, nil
@@ -122,6 +124,8 @@ var _NumberNameToValueMap = map[string]Number{
 	_NumberName[6:11]: 3,
 }
 
+// NumberString retrieves an enum value from the enum constants string name.
+// Throws an error if the param is not part of the enum.
 func NumberString(s string) (Number, error) {
 	if val, ok := _NumberNameToValueMap[s]; ok {
 		return val, nil
@@ -183,6 +187,8 @@ var _GapNameToValueMap = map[string]Gap{
 	_GapName_2[0:6]:   11,
 }
 
+// GapString retrieves an enum value from the enum constants string name.
+// Throws an error if the param is not part of the enum.
 func GapString(s string) (Gap, error) {
 	if val, ok := _GapNameToValueMap[s]; ok {
 		return val, nil
@@ -223,6 +229,8 @@ var _NumNameToValueMap = map[string]Num{
 	_NumName[10:12]: 2,
 }
 
+// NumString retrieves an enum value from the enum constants string name.
+// Throws an error if the param is not part of the enum.
 func NumString(s string) (Num, error) {
 	if val, ok := _NumNameToValueMap[s]; ok {
 		return val, nil
@@ -276,6 +284,8 @@ var _UnumNameToValueMap = map[string]Unum{
 	_UnumName_1[3:6]: 254,
 }
 
+// UnumString retrieves an enum value from the enum constants string name.
+// Throws an error if the param is not part of the enum.
 func UnumString(s string) (Unum, error) {
 	if val, ok := _UnumNameToValueMap[s]; ok {
 		return val, nil
@@ -347,6 +357,8 @@ var _PrimeNameToValueMap = map[string]Prime{
 	_PrimeName[32:35]: 43,
 }
 
+// PrimeString retrieves an enum value from the enum constants string name.
+// Throws an error if the param is not part of the enum.
 func PrimeString(s string) (Prime, error) {
 	if val, ok := _PrimeNameToValueMap[s]; ok {
 		return val, nil
@@ -415,6 +427,8 @@ var _PrimeNameToValueMap = map[string]Prime{
 	_PrimeName[32:35]: 43,
 }
 
+// PrimeString retrieves an enum value from the enum constants string name.
+// Throws an error if the param is not part of the enum.
 func PrimeString(s string) (Prime, error) {
 	if val, ok := _PrimeNameToValueMap[s]; ok {
 		return val, nil
@@ -499,6 +513,8 @@ var _PrimeNameToValueMap = map[string]Prime{
 	_PrimeName[32:35]: 43,
 }
 
+// PrimeString retrieves an enum value from the enum constants string name.
+// Throws an error if the param is not part of the enum.
 func PrimeString(s string) (Prime, error) {
 	if val, ok := _PrimeNameToValueMap[s]; ok {
 		return val, nil
@@ -583,6 +599,8 @@ var _PrimeNameToValueMap = map[string]Prime{
 	_PrimeName[32:35]: 43,
 }
 
+// PrimeString retrieves an enum value from the enum constants string name.
+// Throws an error if the param is not part of the enum.
 func PrimeString(s string) (Prime, error) {
 	if val, ok := _PrimeNameToValueMap[s]; ok {
 		return val, nil
@@ -680,6 +698,8 @@ var _PrimeNameToValueMap = map[string]Prime{
 	_PrimeName[32:35]: 43,
 }
 
+// PrimeString retrieves an enum value from the enum constants string name.
+// Throws an error if the param is not part of the enum.
 func PrimeString(s string) (Prime, error) {
 	if val, ok := _PrimeNameToValueMap[s]; ok {
 		return val, nil
