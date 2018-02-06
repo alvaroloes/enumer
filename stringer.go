@@ -165,7 +165,7 @@ func main() {
 	// Write to file.
 	outputName := *output
 	if outputName == "" {
-		baseName := fmt.Sprintf("%s_string.go", types[0])
+		baseName := fmt.Sprintf("%s_enumer.go", types[0])
 		outputName = filepath.Join(dir, strings.ToLower(baseName))
 	}
 	err := ioutil.WriteFile(outputName, src, 0644)

@@ -109,7 +109,7 @@ were added (i.e. `enumer -type=MyType -json -transform=snake`).
 Possible transform values are `snake` and `kebab` for transformation to snake_case and kebab-case accordingly.
 The default value for `transform` flag is `noop` which means no transformation will be performed.
 
-If a prefix is provided via the `trimprefix` flag that will be trimmed from the start of each name (before
+If a prefix is provided via the `trimprefix` flag, it will be trimmed from the start of each name (before
 it is transformed). If a name doesn't have the prefix it will be passed unchanged.
 
 ## Inspiring projects
