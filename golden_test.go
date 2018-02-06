@@ -46,6 +46,10 @@ var goldenJSONAndSQL = []Golden{
 	{"prime", prime_json_and_sql_in, prime_json_and_sql_out},
 }
 
+var goldenPrefix = []Golden{
+	{"prefix", prefix_in, day_out},
+}
+
 // Each example starts with "type XXX [u]int", with a single space separating them.
 
 // Simple test: enumeration of type int starting at 0.
@@ -751,25 +755,40 @@ func (i *Prime) Scan(value interface{}) error {
 }
 `
 
+const prefix_in = `type Day int
+const (
+	DayMonday Day = iota
+	DayTuesday
+	DayWednesday
+	DayThursday
+	DayFriday
+	DaySaturday
+	DaySunday
+)
+`
+
 func TestGolden(t *testing.T) {
 	for _, test := range golden {
-		runGoldenTest(t, test, false, false, false)
+		runGoldenTest(t, test, false, false, false, "")
 	}
 	for _, test := range goldenJSON {
-		runGoldenTest(t, test, true, false, false)
+		runGoldenTest(t, test, true, false, false, "")
 	}
 	for _, test := range goldenYAML {
-		runGoldenTest(t, test, false, true, false)
+		runGoldenTest(t, test, false, true, false, "")
 	}
 	for _, test := range goldenSQL {
-		runGoldenTest(t, test, false, false, true)
+		runGoldenTest(t, test, false, false, true, "")
 	}
 	for _, test := range goldenJSONAndSQL {
-		runGoldenTest(t, test, true, false, true)
+		runGoldenTest(t, test, true, false, true, "")
+	}
+	for _, test := range goldenPrefix {
+		runGoldenTest(t, test, false, false, false, "Day")
 	}
 }
 
-func runGoldenTest(t *testing.T, test Golden, generateJSON, generateYAML, generateSQL bool) {
+func runGoldenTest(t *testing.T, test Golden, generateJSON, generateYAML, generateSQL bool, prefix string) {
 	var g Generator
 	input := "package test\n" + test.input
 	file := test.name + ".go"
@@ -779,7 +798,7 @@ func runGoldenTest(t *testing.T, test Golden, generateJSON, generateYAML, genera
 	if len(tokens) != 3 {
 		t.Fatalf("%s: need type declaration on first line", test.name)
 	}
-	g.generate(tokens[1], generateJSON, generateYAML, generateSQL, "noop")
+	g.generate(tokens[1], generateJSON, generateYAML, generateSQL, "noop", prefix)
 	got := string(g.format())
 	if got != test.output {
 		t.Errorf("%s: got\n====\n%s====\nexpected\n====%s", test.name, got, test.output)
