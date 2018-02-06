@@ -46,6 +46,10 @@ var goldenJSONAndSQL = []Golden{
 	{"prime", prime_json_and_sql_in, prime_json_and_sql_out},
 }
 
+var goldenPrefix = []Golden{
+	{"prefix", prefix_in, day_out},
+}
+
 // Each example starts with "type XXX [u]int", with a single space separating them.
 
 // Simple test: enumeration of type int starting at 0.
@@ -83,6 +87,8 @@ var _DayNameToValueMap = map[string]Day{
 	_DayName[44:50]: 6,
 }
 
+// DayString retrieves an enum value from the enum constants string name.
+// Throws an error if the param is not part of the enum.
 func DayString(s string) (Day, error) {
 	if val, ok := _DayNameToValueMap[s]; ok {
 		return val, nil
@@ -122,6 +128,8 @@ var _NumberNameToValueMap = map[string]Number{
 	_NumberName[6:11]: 3,
 }
 
+// NumberString retrieves an enum value from the enum constants string name.
+// Throws an error if the param is not part of the enum.
 func NumberString(s string) (Number, error) {
 	if val, ok := _NumberNameToValueMap[s]; ok {
 		return val, nil
@@ -183,6 +191,8 @@ var _GapNameToValueMap = map[string]Gap{
 	_GapName_2[0:6]:   11,
 }
 
+// GapString retrieves an enum value from the enum constants string name.
+// Throws an error if the param is not part of the enum.
 func GapString(s string) (Gap, error) {
 	if val, ok := _GapNameToValueMap[s]; ok {
 		return val, nil
@@ -223,6 +233,8 @@ var _NumNameToValueMap = map[string]Num{
 	_NumName[10:12]: 2,
 }
 
+// NumString retrieves an enum value from the enum constants string name.
+// Throws an error if the param is not part of the enum.
 func NumString(s string) (Num, error) {
 	if val, ok := _NumNameToValueMap[s]; ok {
 		return val, nil
@@ -276,6 +288,8 @@ var _UnumNameToValueMap = map[string]Unum{
 	_UnumName_1[3:6]: 254,
 }
 
+// UnumString retrieves an enum value from the enum constants string name.
+// Throws an error if the param is not part of the enum.
 func UnumString(s string) (Unum, error) {
 	if val, ok := _UnumNameToValueMap[s]; ok {
 		return val, nil
@@ -347,6 +361,8 @@ var _PrimeNameToValueMap = map[string]Prime{
 	_PrimeName[32:35]: 43,
 }
 
+// PrimeString retrieves an enum value from the enum constants string name.
+// Throws an error if the param is not part of the enum.
 func PrimeString(s string) (Prime, error) {
 	if val, ok := _PrimeNameToValueMap[s]; ok {
 		return val, nil
@@ -415,6 +431,8 @@ var _PrimeNameToValueMap = map[string]Prime{
 	_PrimeName[32:35]: 43,
 }
 
+// PrimeString retrieves an enum value from the enum constants string name.
+// Throws an error if the param is not part of the enum.
 func PrimeString(s string) (Prime, error) {
 	if val, ok := _PrimeNameToValueMap[s]; ok {
 		return val, nil
@@ -499,6 +517,8 @@ var _PrimeNameToValueMap = map[string]Prime{
 	_PrimeName[32:35]: 43,
 }
 
+// PrimeString retrieves an enum value from the enum constants string name.
+// Throws an error if the param is not part of the enum.
 func PrimeString(s string) (Prime, error) {
 	if val, ok := _PrimeNameToValueMap[s]; ok {
 		return val, nil
@@ -583,6 +603,8 @@ var _PrimeNameToValueMap = map[string]Prime{
 	_PrimeName[32:35]: 43,
 }
 
+// PrimeString retrieves an enum value from the enum constants string name.
+// Throws an error if the param is not part of the enum.
 func PrimeString(s string) (Prime, error) {
 	if val, ok := _PrimeNameToValueMap[s]; ok {
 		return val, nil
@@ -680,6 +702,8 @@ var _PrimeNameToValueMap = map[string]Prime{
 	_PrimeName[32:35]: 43,
 }
 
+// PrimeString retrieves an enum value from the enum constants string name.
+// Throws an error if the param is not part of the enum.
 func PrimeString(s string) (Prime, error) {
 	if val, ok := _PrimeNameToValueMap[s]; ok {
 		return val, nil
@@ -731,25 +755,40 @@ func (i *Prime) Scan(value interface{}) error {
 }
 `
 
+const prefix_in = `type Day int
+const (
+	DayMonday Day = iota
+	DayTuesday
+	DayWednesday
+	DayThursday
+	DayFriday
+	DaySaturday
+	DaySunday
+)
+`
+
 func TestGolden(t *testing.T) {
 	for _, test := range golden {
-		runGoldenTest(t, test, false, false, false)
+		runGoldenTest(t, test, false, false, false, "")
 	}
 	for _, test := range goldenJSON {
-		runGoldenTest(t, test, true, false, false)
+		runGoldenTest(t, test, true, false, false, "")
 	}
 	for _, test := range goldenYAML {
-		runGoldenTest(t, test, false, true, false)
+		runGoldenTest(t, test, false, true, false, "")
 	}
 	for _, test := range goldenSQL {
-		runGoldenTest(t, test, false, false, true)
+		runGoldenTest(t, test, false, false, true, "")
 	}
 	for _, test := range goldenJSONAndSQL {
-		runGoldenTest(t, test, true, false, true)
+		runGoldenTest(t, test, true, false, true, "")
+	}
+	for _, test := range goldenPrefix {
+		runGoldenTest(t, test, false, false, false, "Day")
 	}
 }
 
-func runGoldenTest(t *testing.T, test Golden, generateJSON, generateYAML, generateSQL bool) {
+func runGoldenTest(t *testing.T, test Golden, generateJSON, generateYAML, generateSQL bool, prefix string) {
 	var g Generator
 	input := "package test\n" + test.input
 	file := test.name + ".go"
@@ -759,7 +798,7 @@ func runGoldenTest(t *testing.T, test Golden, generateJSON, generateYAML, genera
 	if len(tokens) != 3 {
 		t.Fatalf("%s: need type declaration on first line", test.name)
 	}
-	g.generate(tokens[1], generateJSON, generateYAML, generateSQL, "noop")
+	g.generate(tokens[1], generateJSON, generateYAML, generateSQL, "noop", prefix)
 	got := string(g.format())
 	if got != test.output {
 		t.Errorf("%s: got\n====\n%s====\nexpected\n====%s", test.name, got, test.output)
