@@ -294,6 +294,8 @@ func (pkg *Package) check(fs *token.FileSet, astFiles []*ast.File) {
 func (g *Generator) transformValueNames(values []Value, transformMethod string) {
 	var sep rune
 	switch transformMethod {
+	case "upper_snake":
+		sep = '_'
 	case "snake":
 		sep = '_'
 	case "kebab":
@@ -303,7 +305,11 @@ func (g *Generator) transformValueNames(values []Value, transformMethod string) 
 	}
 
 	for i := range values {
-		values[i].name = strings.ToLower(name.Delimit(values[i].name, sep))
+		if transformMethod == "upper_snake" {
+			values[i].name = strings.ToUpper(name.Delimit(values[i].name, sep))
+		} else {
+			values[i].name = strings.ToLower(name.Delimit(values[i].name, sep))
+		}
 	}
 }
 
