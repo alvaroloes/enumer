@@ -440,10 +440,12 @@ func PrimeString(s string) (Prime, error) {
 	return 0, fmt.Errorf("%s does not belong to Prime values", s)
 }
 
+// MarshalJSON implements the json.Marshaler interface for Prime
 func (i Prime) MarshalJSON() ([]byte, error) {
 	return json.Marshal(i.String())
 }
 
+// UnmarshalJSON implements the json.Unmarshaler interface for Prime
 func (i *Prime) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -526,10 +528,12 @@ func PrimeString(s string) (Prime, error) {
 	return 0, fmt.Errorf("%s does not belong to Prime values", s)
 }
 
+// MarshalYAML implements a YAML Marshaler interface for Prime
 func (i Prime) MarshalYAML() (interface{}, error) {
 	return i.String(), nil
 }
 
+// UnmarshalYAML implements a YAML Unmarshaler interface for Prime
 func (i *Prime) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	var s string
 	if err := unmarshal(&s); err != nil {
@@ -711,10 +715,12 @@ func PrimeString(s string) (Prime, error) {
 	return 0, fmt.Errorf("%s does not belong to Prime values", s)
 }
 
+// MarshalJSON implements the json.Marshaler interface for Prime
 func (i Prime) MarshalJSON() ([]byte, error) {
 	return json.Marshal(i.String())
 }
 
+// UnmarshalJSON implements the json.Unmarshaler interface for Prime
 func (i *Prime) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
