@@ -93,7 +93,12 @@ name := MyTypeValue.String() // name => "MyTypeValue"
 
 Sometimes you need to use some other string representation format than CamelCase (i.e. in JSON).
 
-To transform it from CamelCase to snake_case or kebab-case, you can use the `transform` flag.
+To transform it from CamelCase, you can use the `transform` flag. Possible transformations are:
+
+- `snake` - lower_snake_case
+- `upper_snake` - UPPER_SNAKE_CASE
+- `kebab` - kebab-case
+- `noop` - no transformation (default)
 
 For example, the command `enumer -type=MyType -json -transform=snake` would generate the following string representation:
 
@@ -101,7 +106,7 @@ For example, the command `enumer -type=MyType -json -transform=snake` would gene
 name := MyTypeValue.String() // name => "my_type_value"
 ```
 
-**Note**: The transformation only works form CamelCase to snake_case or kebab-case, not the other way around.
+**Note**: The transformation only converts from CamelCase to something else, not vice versa.
 
 ## How to use
 
@@ -115,12 +120,6 @@ be implemented to seamlessly use the enum in a database model.
 
 For enum string representation transformation, the `transform` and `trimprefix` flags
 were added (i.e. `enumer -type=MyType -json -transform=snake`).
-Possible transforms:
-
-- `snake` - lower_snake_case
-- `upper_snake` - UPPER_SNAKE_CASE
-- `kebab` - kebab-case
-- `noop` - no transformation (default)
 
 If a prefix is provided via the `trimprefix` flag, it will be trimmed from the start of each name (before
 it is transformed). If a name doesn't have the prefix it will be passed unchanged.
