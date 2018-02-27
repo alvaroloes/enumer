@@ -61,8 +61,8 @@ func TestEndToEnd(t *testing.T) {
 		typeName := fmt.Sprintf("%c%s", name[0]+'A'-'a', name[1:len(name)-len(".go")])
 		transformNameMethod := "noop"
 
-		if name == "transform.go" {
-			typeName = "CamelCaseValue"
+		if name == "transform_lower_snake_case.go" {
+			typeName = "TransformLowerSnakeCase"
 			transformNameMethod = "snake"
 		}
 
