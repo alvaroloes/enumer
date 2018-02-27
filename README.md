@@ -1,8 +1,10 @@
 # Enumer
+
 Enumer is a tool to generate Go code that adds useful methods to Go enums (constants with a specific type).
 It started as a fork of [Rob Pike’s Stringer tool](https://godoc.org/golang.org/x/tools/cmd/stringer).
 
 ## Generated functions and methods
+
 When Enumer is applied to a type, it will generate:
 
 * A method `String()` that returns the string representation of the enum value. This makes the enum conform
@@ -19,6 +21,7 @@ the enum conform to the `gopkg.in/yaml.v2.Marshaler` and `gopkg.in/yaml.v2.Unmar
 Useful when storing the enum in a database.
 
 For example, if we have an enum type called `Pill`,
+
 ```go
 type Pill int
 
@@ -30,7 +33,9 @@ const (
 	Acetaminophen = Paracetamol
 )
 ```
+
 executing `enumer -type=Pill -json` will generate a new file with four methods:
+
 ```go
 func (i Pill) String() string {
     //...
@@ -48,7 +53,9 @@ func (i *Pill) UnmarshalJSON(data []byte) error {
 	//...
 }
 ```
+
 From now on, we can:
+
 ```go
 // Convert any Pill value to string
 var aspirinString string = Aspirin.String()
@@ -79,7 +86,7 @@ By default, Enumer uses the same name of the enum value for generating the strin
 ```go
 type MyType int
 
- ...
+//...
 
 name := MyTypeValue.String() // name => "MyTypeValue"
 ```
@@ -93,9 +100,11 @@ For example, the command `enumer -type=MyType -json -transform=snake` would gene
 ```go
 name := MyTypeValue.String() // name => "my_type_value"
 ```
+
 **Note**: The transformation only works form CamelCase to snake_case or kebab-case, not the other way around.
 
 ## How to use
+
 The usage of Enumer is the same as Stringer, so you can refer to the [Stringer docs](https://godoc.org/golang.org/x/tools/cmd/stringer)
 for more information.
 
@@ -117,5 +126,6 @@ If a prefix is provided via the `trimprefix` flag, it will be trimmed from the s
 it is transformed). If a name doesn't have the prefix it will be passed unchanged.
 
 ## Inspiring projects
+
 * [Stringer](https://godoc.org/golang.org/x/tools/cmd/stringer)
 * [jsonenums](https://github.com/campoy/jsonenums)
