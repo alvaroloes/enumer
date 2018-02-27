@@ -9,7 +9,6 @@
 package main
 
 import (
-	"fmt"
 	"go/build"
 	"io"
 	"io/ioutil"
@@ -18,6 +17,8 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/pascaldekloe/name"
 )
 
 // This file contains a test that compiles and runs each program in testdata
@@ -48,25 +49,32 @@ func TestEndToEnd(t *testing.T) {
 		t.Fatalf("Readdirnames: %s", err)
 	}
 	// Generate, compile, and run the test programs.
-	for _, name := range names {
-		if !strings.HasSuffix(name, ".go") {
-			t.Errorf("%s is not a Go file", name)
+	for _, filename := range names {
+		if !strings.HasSuffix(filename, ".go") {
+			t.Errorf("%s is not a Go file", filename)
 			continue
 		}
-		if name == "cgo.go" && !build.Default.CgoEnabled {
-			t.Logf("cgo is no enabled for %s", name)
+		if filename == "cgo.go" && !build.Default.CgoEnabled {
+			t.Logf("cgo is no enabled for %s", filename)
 			continue
 		}
 		// Names are known to be ASCII and long enough.
-		typeName := fmt.Sprintf("%c%s", name[0]+'A'-'a', name[1:len(name)-len(".go")])
-		transformNameMethod := "noop"
+		filenameSuffixless := strings.TrimSuffix(filename, ".go")
+		typeName := name.CamelCase(filenameSuffixless, true)
 
-		if name == "transform.go" {
-			typeName = "CamelCaseValue"
+		var transformNameMethod string
+		switch filenameSuffixless {
+		case "transform_lower_snake_case":
 			transformNameMethod = "snake"
+		case "transform_upper_snake_case":
+			transformNameMethod = "upper_snake"
+		case "transform_kebab_case":
+			transformNameMethod = "kebab"
+		default:
+			transformNameMethod = "noop"
 		}
 
-		stringerCompileAndRun(t, dir, stringer, typeName, name, transformNameMethod)
+		stringerCompileAndRun(t, dir, stringer, typeName, filename, transformNameMethod)
 	}
 }
 

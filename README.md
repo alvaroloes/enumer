@@ -1,8 +1,10 @@
 # Enumer
+
 Enumer is a tool to generate Go code that adds useful methods to Go enums (constants with a specific type).
 It started as a fork of [Rob Pike’s Stringer tool](https://godoc.org/golang.org/x/tools/cmd/stringer).
 
 ## Generated functions and methods
+
 When Enumer is applied to a type, it will generate:
 
 * A method `String()` that returns the string representation of the enum value. This makes the enum conform
@@ -19,6 +21,7 @@ the enum conform to the `gopkg.in/yaml.v2.Marshaler` and `gopkg.in/yaml.v2.Unmar
 Useful when storing the enum in a database.
 
 For example, if we have an enum type called `Pill`,
+
 ```go
 type Pill int
 
@@ -30,7 +33,9 @@ const (
 	Acetaminophen = Paracetamol
 )
 ```
+
 executing `enumer -type=Pill -json` will generate a new file with four methods:
+
 ```go
 func (i Pill) String() string {
     //...
@@ -48,7 +53,9 @@ func (i *Pill) UnmarshalJSON(data []byte) error {
 	//...
 }
 ```
+
 From now on, we can:
+
 ```go
 // Convert any Pill value to string
 var aspirinString string = Aspirin.String()
@@ -79,23 +86,30 @@ By default, Enumer uses the same name of the enum value for generating the strin
 ```go
 type MyType int
 
- ...
+//...
 
 name := MyTypeValue.String() // name => "MyTypeValue"
 ```
 
 Sometimes you need to use some other string representation format than CamelCase (i.e. in JSON).
 
-To transform it from CamelCase to snake_case or kebab-case, you can use the `transform` flag.
+To transform it from CamelCase, you can use the `transform` flag. Possible transformations are:
+
+- `snake` - lower_snake_case
+- `upper_snake` - UPPER_SNAKE_CASE
+- `kebab` - kebab-case
+- `noop` - no transformation (default)
 
 For example, the command `enumer -type=MyType -json -transform=snake` would generate the following string representation:
 
 ```go
 name := MyTypeValue.String() // name => "my_type_value"
 ```
-**Note**: The transformation only works form CamelCase to snake_case or kebab-case, not the other way around.
+
+**Note**: The transformation only converts from CamelCase to something else, not vice versa.
 
 ## How to use
+
 The usage of Enumer is the same as Stringer, so you can refer to the [Stringer docs](https://godoc.org/golang.org/x/tools/cmd/stringer)
 for more information.
 
@@ -104,14 +118,13 @@ the JSON related methods will be generated. Similarly if the yaml flag is set to
 the YAML related methods will be generated. And if the sql flag is set to true, the Scanner and Valuer interface will
 be implemented to seamlessly use the enum in a database model.
 
-For enum string representation transformation the `transform` and `trimprefix` flags
+For enum string representation transformation, the `transform` and `trimprefix` flags
 were added (i.e. `enumer -type=MyType -json -transform=snake`).
-Possible transform values are `snake` and `kebab` for transformation to snake_case and kebab-case accordingly.
-The default value for `transform` flag is `noop` which means no transformation will be performed.
 
 If a prefix is provided via the `trimprefix` flag, it will be trimmed from the start of each name (before
 it is transformed). If a name doesn't have the prefix it will be passed unchanged.
 
 ## Inspiring projects
+
 * [Stringer](https://godoc.org/golang.org/x/tools/cmd/stringer)
 * [jsonenums](https://github.com/campoy/jsonenums)
