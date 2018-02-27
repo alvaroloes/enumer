@@ -68,6 +68,8 @@ func TestEndToEnd(t *testing.T) {
 			transformNameMethod = "snake"
 		case "transform_upper_snake_case":
 			transformNameMethod = "upper_snake"
+		case "transform_kebab_case":
+			transformNameMethod = "kebab"
 		default:
 			transformNameMethod = "noop"
 		}
