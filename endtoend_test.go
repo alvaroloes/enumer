@@ -66,6 +66,8 @@ func TestEndToEnd(t *testing.T) {
 		switch filenameSuffixless {
 		case "transform_lower_snake_case":
 			transformNameMethod = "snake"
+		case "transform_upper_snake_case":
+			transformNameMethod = "upper_snake"
 		default:
 			transformNameMethod = "noop"
 		}
