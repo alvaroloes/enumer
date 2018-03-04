@@ -3,6 +3,13 @@
 Enumer is a tool to generate Go code that adds useful methods to Go enums (constants with a specific type).
 It started as a fork of [Rob Pike’s Stringer tool](https://godoc.org/golang.org/x/tools/cmd/stringer).
 
+## Note on Dependencies
+
+Dependencies for this fork are manged using
+[dep](https://golang.github.io/dep/). Refer to [it's
+documentation](https://golang.github.io/dep/docs/introduction.html) for further
+details.
+
 ## Generated functions and methods
 
 When Enumer is applied to a type, it will generate:
