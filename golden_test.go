@@ -531,10 +531,12 @@ func PrimeString(s string) (Prime, error) {
 	return 0, fmt.Errorf("%s does not belong to Prime values", s)
 }
 
+// MarshalText implements the encoding.TextMarshaler interface for Prime
 func (i Prime) MarshalText() ([]byte, error) {
 	return []byte(i.String()), nil
 }
 
+// MarshalText implements the encoding.TextUnmarshaler interface for Prime
 func (i *Prime) UnmarshalText(text []byte) error {
 	var err error
 	*i, err = PrimeString(string(text))
@@ -612,12 +614,12 @@ func PrimeString(s string) (Prime, error) {
 	return 0, fmt.Errorf("%s does not belong to Prime values", s)
 }
 
-// MarshalYAML implements a YAML Marshaler interface for Prime
+// MarshalYAML implements a YAML Marshaler for Prime
 func (i Prime) MarshalYAML() (interface{}, error) {
 	return i.String(), nil
 }
 
-// UnmarshalYAML implements a YAML Unmarshaler interface for Prime
+// UnmarshalYAML implements a YAML Unmarshaler for Prime
 func (i *Prime) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	var s string
 	if err := unmarshal(&s); err != nil {

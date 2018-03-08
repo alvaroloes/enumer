@@ -65,10 +65,12 @@ func (g *Generator) buildJSONMethods(runs [][]Value, typeName string, runsThresh
 // Arguments to format are:
 //	[1]: type name
 const textMethods = `
+// MarshalText implements the encoding.TextMarshaler interface for %[1]s
 func (i %[1]s) MarshalText() ([]byte, error) {
 	return []byte(i.String()), nil
 }
 
+// MarshalText implements the encoding.TextUnmarshaler interface for %[1]s
 func (i *%[1]s) UnmarshalText(text []byte) error {
 	var err error
 	*i, err = %[1]sString(string(text))
@@ -83,12 +85,12 @@ func (g *Generator) buildTextMethods(runs [][]Value, typeName string, runsThresh
 // Arguments to format are:
 //	[1]: type name
 const yamlMethods = `
-// MarshalYAML implements a YAML Marshaler interface for %[1]s
+// MarshalYAML implements a YAML Marshaler for %[1]s
 func (i %[1]s) MarshalYAML() (interface{}, error) {
 	return i.String(), nil
 }
 
-// UnmarshalYAML implements a YAML Unmarshaler interface for %[1]s
+// UnmarshalYAML implements a YAML Unmarshaler for %[1]s
 func (i *%[1]s) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	var s string
 	if err := unmarshal(&s); err != nil {
