@@ -62,6 +62,24 @@ func (g *Generator) buildJSONMethods(runs [][]Value, typeName string, runsThresh
 
 // Arguments to format are:
 //	[1]: type name
+const textMethods = `
+func (i %[1]s) MarshalText() ([]byte, error) {
+	return []byte(i.String()), nil
+}
+
+func (i *%[1]s) UnmarshalText(text []byte) error {
+	var err error
+	*i, err = %[1]sString(string(text))
+	return err
+}
+`
+
+func (g *Generator) buildTextMethods(runs [][]Value, typeName string, runsThreshold int) {
+	g.Printf(textMethods, typeName)
+}
+
+// Arguments to format are:
+//	[1]: type name
 const yamlMethods = `
 func (i %[1]s) MarshalYAML() (interface{}, error) {
 	return i.String(), nil

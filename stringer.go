@@ -91,6 +91,7 @@ var (
 	sql             = flag.Bool("sql", false, "if true, the Scanner and Valuer interface will be implemented.")
 	json            = flag.Bool("json", false, "if true, json marshaling methods will be generated. Default: false")
 	yaml            = flag.Bool("yaml", false, "if true, yaml marshaling methods will be generated. Default: false")
+	text            = flag.Bool("text", false, "if true, text marshaling methods will be generated. Default: false")
 	output          = flag.String("output", "", "output file name; default srcdir/<type>_string.go")
 	transformMethod = flag.String("transform", "noop", "enum item name transformation method. Default: noop")
 	trimPrefix      = flag.String("trimprefix", "", "transform each item name by removing a prefix. Default: \"\"")
@@ -156,7 +157,7 @@ func main() {
 
 	// Run generate for each type.
 	for _, typeName := range types {
-		g.generate(typeName, *json, *yaml, *sql, *transformMethod, *trimPrefix)
+		g.generate(typeName, *json, *yaml, *sql, *text, *transformMethod, *trimPrefix)
 	}
 
 	// Format the output.
@@ -315,7 +316,7 @@ func (g *Generator) trimValueNames(values []Value, prefix string) {
 }
 
 // generate produces the String method for the named type.
-func (g *Generator) generate(typeName string, includeJSON, includeYAML, includeSQL bool, transformMethod string, trimPrefix string) {
+func (g *Generator) generate(typeName string, includeJSON, includeYAML, includeSQL, includeText bool, transformMethod string, trimPrefix string) {
 	values := make([]Value, 0, 100)
 	for _, file := range g.pkg.files {
 		// Set the state for this run of the walker.
@@ -361,6 +362,9 @@ func (g *Generator) generate(typeName string, includeJSON, includeYAML, includeS
 	g.buildValueToNameMap(runs, typeName, runsThreshold)
 	if includeJSON {
 		g.buildJSONMethods(runs, typeName, runsThreshold)
+	}
+	if includeText {
+		g.buildTextMethods(runs, typeName, runsThreshold)
 	}
 	if includeYAML {
 		g.buildYAMLMethods(runs, typeName, runsThreshold)

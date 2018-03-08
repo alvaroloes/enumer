@@ -33,6 +33,9 @@ var golden = []Golden{
 var goldenJSON = []Golden{
 	{"prime", prime_json_in, prime_json_out},
 }
+var goldenText = []Golden{
+	{"prime", prime_text_in, prime_text_out},
+}
 
 var goldenYAML = []Golden{
 	{"prime", prime_yaml_in, prime_yaml_out},
@@ -456,6 +459,87 @@ func (i *Prime) UnmarshalJSON(data []byte) error {
 }
 `
 
+const prime_text_in = `type Prime int
+const (
+	p2 Prime = 2
+	p3 Prime = 3
+	p5 Prime = 5
+	p7 Prime = 7
+	p77 Prime = 7 // Duplicate; note that p77 doesn't appear below.
+	p11 Prime = 11
+	p13 Prime = 13
+	p17 Prime = 17
+	p19 Prime = 19
+	p23 Prime = 23
+	p29 Prime = 29
+	p37 Prime = 31
+	p41 Prime = 41
+	p43 Prime = 43
+)
+`
+
+const prime_text_out = `
+const _PrimeName = "p2p3p5p7p11p13p17p19p23p29p37p41p43"
+
+var _PrimeMap = map[Prime]string{
+	2:  _PrimeName[0:2],
+	3:  _PrimeName[2:4],
+	5:  _PrimeName[4:6],
+	7:  _PrimeName[6:8],
+	11: _PrimeName[8:11],
+	13: _PrimeName[11:14],
+	17: _PrimeName[14:17],
+	19: _PrimeName[17:20],
+	23: _PrimeName[20:23],
+	29: _PrimeName[23:26],
+	31: _PrimeName[26:29],
+	41: _PrimeName[29:32],
+	43: _PrimeName[32:35],
+}
+
+func (i Prime) String() string {
+	if str, ok := _PrimeMap[i]; ok {
+		return str
+	}
+	return fmt.Sprintf("Prime(%d)", i)
+}
+
+var _PrimeNameToValueMap = map[string]Prime{
+	_PrimeName[0:2]:   2,
+	_PrimeName[2:4]:   3,
+	_PrimeName[4:6]:   5,
+	_PrimeName[6:8]:   7,
+	_PrimeName[8:11]:  11,
+	_PrimeName[11:14]: 13,
+	_PrimeName[14:17]: 17,
+	_PrimeName[17:20]: 19,
+	_PrimeName[20:23]: 23,
+	_PrimeName[23:26]: 29,
+	_PrimeName[26:29]: 31,
+	_PrimeName[29:32]: 41,
+	_PrimeName[32:35]: 43,
+}
+
+// PrimeString retrieves an enum value from the enum constants string name.
+// Throws an error if the param is not part of the enum.
+func PrimeString(s string) (Prime, error) {
+	if val, ok := _PrimeNameToValueMap[s]; ok {
+		return val, nil
+	}
+	return 0, fmt.Errorf("%s does not belong to Prime values", s)
+}
+
+func (i Prime) MarshalText() ([]byte, error) {
+	return []byte(i.String()), nil
+}
+
+func (i *Prime) UnmarshalText(text []byte) error {
+	var err error
+	*i, err = PrimeString(string(text))
+	return err
+}
+`
+
 const prime_yaml_in = `type Prime int
 const (
 	p2 Prime = 2
@@ -769,26 +853,29 @@ const (
 
 func TestGolden(t *testing.T) {
 	for _, test := range golden {
-		runGoldenTest(t, test, false, false, false, "")
+		runGoldenTest(t, test, false, false, false, false, "")
 	}
 	for _, test := range goldenJSON {
-		runGoldenTest(t, test, true, false, false, "")
+		runGoldenTest(t, test, true, false, false, false, "")
+	}
+	for _, test := range goldenText {
+		runGoldenTest(t, test, false, false, false, true, "")
 	}
 	for _, test := range goldenYAML {
-		runGoldenTest(t, test, false, true, false, "")
+		runGoldenTest(t, test, false, true, false, false, "")
 	}
 	for _, test := range goldenSQL {
-		runGoldenTest(t, test, false, false, true, "")
+		runGoldenTest(t, test, false, false, true, false, "")
 	}
 	for _, test := range goldenJSONAndSQL {
-		runGoldenTest(t, test, true, false, true, "")
+		runGoldenTest(t, test, true, false, true, false, "")
 	}
 	for _, test := range goldenPrefix {
-		runGoldenTest(t, test, false, false, false, "Day")
+		runGoldenTest(t, test, false, false, false, false, "Day")
 	}
 }
 
-func runGoldenTest(t *testing.T, test Golden, generateJSON, generateYAML, generateSQL bool, prefix string) {
+func runGoldenTest(t *testing.T, test Golden, generateJSON, generateYAML, generateSQL, generateText bool, prefix string) {
 	var g Generator
 	input := "package test\n" + test.input
 	file := test.name + ".go"
@@ -798,7 +885,7 @@ func runGoldenTest(t *testing.T, test Golden, generateJSON, generateYAML, genera
 	if len(tokens) != 3 {
 		t.Fatalf("%s: need type declaration on first line", test.name)
 	}
-	g.generate(tokens[1], generateJSON, generateYAML, generateSQL, "noop", prefix)
+	g.generate(tokens[1], generateJSON, generateYAML, generateSQL, generateText, "noop", prefix)
 	got := string(g.format())
 	if got != test.output {
 		t.Errorf("%s: got\n====\n%s====\nexpected\n====%s", test.name, got, test.output)
