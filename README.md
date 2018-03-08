@@ -13,6 +13,10 @@ from a REST API request... In short, from those places where using the real enum
 be almost meaningless or hard to trace or use by a human.
 * When the flag `json` is provided, two additional methods will be generated, `MarshalJSON()` and `UnmarshalJSON()`. These make
 the enum conform to the `json.Marshaler` and `json.Unmarshaler` interfaces. Very useful to use it in JSON APIs.
+* When the flag `text` is provided, two additional methods will be generated, `MarshalText()` and `UnmarshalText()`. These make
+the enum conform to the `encoding.TextMarshaler` and `encoding.TextUnmarshaler` interfaces. 
+**Note:** If you use your enum values as keys in a map and you encode the map as _JSON_, you need this flag set to true to properly
+convert the map keys to json (strings). If not, the numeric values will be used instead
 * When the flag `yaml` is provided, two additional methods will be generated, `MarshalYAML()` and `UnmarshalYAML()`. These make
 the enum conform to the `gopkg.in/yaml.v2.Marshaler` and `gopkg.in/yaml.v2.Unmarshaler` interfaces.
 * When the flag `sql` is provided, the methods for implementing the Scanner and Valuer interfaces will be also generated.
@@ -99,10 +103,8 @@ name := MyTypeValue.String() // name => "my_type_value"
 The usage of Enumer is the same as Stringer, so you can refer to the [Stringer docs](https://godoc.org/golang.org/x/tools/cmd/stringer)
 for more information.
 
-There are three flags added: `json`, `yaml` and `sql`. If the json flag is set to true (i.e. `enumer -type=Pill -json`),
-the JSON related methods will be generated. Similarly if the yaml flag is set to true,
-the YAML related methods will be generated. And if the sql flag is set to true, the Scanner and Valuer interface will
-be implemented to seamlessly use the enum in a database model.
+There are four boolean flags: `json`, `text`, `yaml` and `sql`. You can use any combination of them (i.e. `enumer -type=Pill -json -text`),
+
 
 For enum string representation transformation the `transform` and `trimprefix` flags
 were added (i.e. `enumer -type=MyType -json -transform=snake`).
