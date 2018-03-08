@@ -5,7 +5,7 @@ import "fmt"
 // Arguments to format are:
 //	[1]: type name
 const stringValueToNameMap = `// %[1]sString retrieves an enum value from the enum constants string name.
-// Throws an error if the param is not part of the enum. 
+// Throws an error if the param is not part of the enum.
 func %[1]sString(s string) (%[1]s, error) {
 	if val, ok := _%[1]sNameToValueMap[s]; ok {
 		return val, nil
@@ -40,10 +40,12 @@ func (g *Generator) buildValueToNameMap(runs [][]Value, typeName string, runsThr
 // Arguments to format are:
 //	[1]: type name
 const jsonMethods = `
+// MarshalJSON implements the json.Marshaler interface for %[1]s
 func (i %[1]s) MarshalJSON() ([]byte, error) {
 	return json.Marshal(i.String())
 }
 
+// UnmarshalJSON implements the json.Unmarshaler interface for %[1]s
 func (i *%[1]s) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -81,10 +83,12 @@ func (g *Generator) buildTextMethods(runs [][]Value, typeName string, runsThresh
 // Arguments to format are:
 //	[1]: type name
 const yamlMethods = `
+// MarshalYAML implements a YAML Marshaler interface for %[1]s
 func (i %[1]s) MarshalYAML() (interface{}, error) {
 	return i.String(), nil
 }
 
+// UnmarshalYAML implements a YAML Unmarshaler interface for %[1]s
 func (i *%[1]s) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	var s string
 	if err := unmarshal(&s); err != nil {
