@@ -34,6 +34,7 @@ func (i %[1]s) IsA%[1]s() bool {
 	return false
 }
 `
+
 // Arguments to format are:
 //	[1]: type name
 const stringBelongsMethodSet = `// IsA%[1]s returns "true" if the value is listed in the enum definition. "false" otherwise
