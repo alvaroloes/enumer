@@ -359,7 +359,7 @@ func (g *Generator) generate(typeName string, includeJSON, includeYAML, includeS
 		g.buildMap(runs, typeName)
 	}
 
-	g.buildValueToNameMap(runs, typeName, runsThreshold)
+	g.buildBasicExtras(runs, typeName, runsThreshold)
 	if includeJSON {
 		g.buildJSONMethods(runs, typeName, runsThreshold)
 	}

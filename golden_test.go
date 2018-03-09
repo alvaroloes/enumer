@@ -80,6 +80,8 @@ func (i Day) String() string {
 	return _DayName[_DayIndex[i]:_DayIndex[i+1]]
 }
 
+var _DayValues = []Day{0, 1, 2, 3, 4, 5, 6}
+
 var _DayNameToValueMap = map[string]Day{
 	_DayName[0:6]:   0,
 	_DayName[6:13]:  1,
@@ -97,6 +99,21 @@ func DayString(s string) (Day, error) {
 		return val, nil
 	}
 	return 0, fmt.Errorf("%s does not belong to Day values", s)
+}
+
+// DayValues returns all values of the enum
+func DayValues() []Day {
+	return _DayValues
+}
+
+// belongsToDay returns "true" if the value is listed in the enum definition. "false" otherwise
+func (i Day) belongsToDay() bool {
+	for _, v := range _DayValues {
+		if i == v {
+			return true
+		}
+	}
+	return false
 }
 `
 
@@ -125,6 +142,8 @@ func (i Number) String() string {
 	return _NumberName[_NumberIndex[i]:_NumberIndex[i+1]]
 }
 
+var _NumberValues = []Number{1, 2, 3}
+
 var _NumberNameToValueMap = map[string]Number{
 	_NumberName[0:3]:  1,
 	_NumberName[3:6]:  2,
@@ -138,6 +157,21 @@ func NumberString(s string) (Number, error) {
 		return val, nil
 	}
 	return 0, fmt.Errorf("%s does not belong to Number values", s)
+}
+
+// NumberValues returns all values of the enum
+func NumberValues() []Number {
+	return _NumberValues
+}
+
+// belongsToNumber returns "true" if the value is listed in the enum definition. "false" otherwise
+func (i Number) belongsToNumber() bool {
+	for _, v := range _NumberValues {
+		if i == v {
+			return true
+		}
+	}
+	return false
 }
 `
 
@@ -183,6 +217,8 @@ func (i Gap) String() string {
 	}
 }
 
+var _GapValues = []Gap{2, 3, 5, 6, 7, 8, 9, 11}
+
 var _GapNameToValueMap = map[string]Gap{
 	_GapName_0[0:3]:   2,
 	_GapName_0[3:8]:   3,
@@ -201,6 +237,21 @@ func GapString(s string) (Gap, error) {
 		return val, nil
 	}
 	return 0, fmt.Errorf("%s does not belong to Gap values", s)
+}
+
+// GapValues returns all values of the enum
+func GapValues() []Gap {
+	return _GapValues
+}
+
+// belongsToGap returns "true" if the value is listed in the enum definition. "false" otherwise
+func (i Gap) belongsToGap() bool {
+	for _, v := range _GapValues {
+		if i == v {
+			return true
+		}
+	}
+	return false
 }
 `
 
@@ -228,6 +279,8 @@ func (i Num) String() string {
 	return _NumName[_NumIndex[i]:_NumIndex[i+1]]
 }
 
+var _NumValues = []Num{-2, -1, 0, 1, 2}
+
 var _NumNameToValueMap = map[string]Num{
 	_NumName[0:3]:   -2,
 	_NumName[3:6]:   -1,
@@ -243,6 +296,21 @@ func NumString(s string) (Num, error) {
 		return val, nil
 	}
 	return 0, fmt.Errorf("%s does not belong to Num values", s)
+}
+
+// NumValues returns all values of the enum
+func NumValues() []Num {
+	return _NumValues
+}
+
+// belongsToNum returns "true" if the value is listed in the enum definition. "false" otherwise
+func (i Num) belongsToNum() bool {
+	for _, v := range _NumValues {
+		if i == v {
+			return true
+		}
+	}
+	return false
 }
 `
 
@@ -283,6 +351,8 @@ func (i Unum) String() string {
 	}
 }
 
+var _UnumValues = []Unum{0, 1, 2, 253, 254}
+
 var _UnumNameToValueMap = map[string]Unum{
 	_UnumName_0[0:2]: 0,
 	_UnumName_0[2:4]: 1,
@@ -298,6 +368,21 @@ func UnumString(s string) (Unum, error) {
 		return val, nil
 	}
 	return 0, fmt.Errorf("%s does not belong to Unum values", s)
+}
+
+// UnumValues returns all values of the enum
+func UnumValues() []Unum {
+	return _UnumValues
+}
+
+// belongsToUnum returns "true" if the value is listed in the enum definition. "false" otherwise
+func (i Unum) belongsToUnum() bool {
+	for _, v := range _UnumValues {
+		if i == v {
+			return true
+		}
+	}
+	return false
 }
 `
 

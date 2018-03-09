@@ -4,7 +4,7 @@ import "fmt"
 
 // Arguments to format are:
 //	[1]: type name
-const stringValueToNameMap = `// %[1]sString retrieves an enum value from the enum constants string name.
+const stringNameToValueMethod = `// %[1]sString retrieves an enum value from the enum constants string name.
 // Throws an error if the param is not part of the enum.
 func %[1]sString(s string) (%[1]s, error) {
 	if val, ok := _%[1]sNameToValueMap[s]; ok {
@@ -14,8 +14,40 @@ func %[1]sString(s string) (%[1]s, error) {
 }
 `
 
-func (g *Generator) buildValueToNameMap(runs [][]Value, typeName string, runsThreshold int) {
+// Arguments to format are:
+//	[1]: type name
+const stringValuesMethod = `// %[1]sValues returns all values of the enum
+func %[1]sValues() []%[1]s {
+	return _%[1]sValues
+}
+`
+
+// Arguments to format are:
+//	[1]: type name
+const stringBelongsMethod = `// belongsTo%[1]s returns "true" if the value is listed in the enum definition. "false" otherwise
+func (i %[1]s) belongsTo%[1]s() bool {
+	for _, v := range _%[1]sValues {
+		if i == v {
+			return true
+		}
+	}
+	return false
+}
+`
+
+func (g *Generator) buildBasicExtras(runs [][]Value, typeName string, runsThreshold int) {
 	// At this moment, either "g.declareIndexAndNameVars()" or "g.declareNameVars()" has been called
+
+	// Print the slice of values
+	g.Printf("\nvar _%sValues = []%s{", typeName, typeName)
+	for _, values := range runs {
+		for _, value := range values {
+			g.Printf("\t%s, ", value.str)
+		}
+	}
+	g.Printf("}\n\n")
+
+	// Print the map between name and value
 	g.Printf("\nvar _%sNameToValueMap = map[string]%s{\n", typeName, typeName)
 	thereAreRuns := len(runs) > 1 && len(runs) <= runsThreshold
 	var n int
@@ -34,7 +66,11 @@ func (g *Generator) buildValueToNameMap(runs [][]Value, typeName string, runsThr
 		}
 	}
 	g.Printf("}\n\n")
-	g.Printf(stringValueToNameMap, typeName)
+
+	// Print the basic extra methods
+	g.Printf(stringNameToValueMethod, typeName)
+	g.Printf(stringValuesMethod, typeName)
+	g.Printf(stringBelongsMethod, typeName)
 }
 
 // Arguments to format are:
