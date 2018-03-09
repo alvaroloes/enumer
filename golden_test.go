@@ -106,8 +106,8 @@ func DayValues() []Day {
 	return _DayValues
 }
 
-// belongsToDay returns "true" if the value is listed in the enum definition. "false" otherwise
-func (i Day) belongsToDay() bool {
+// IsADay returns "true" if the value is listed in the enum definition. "false" otherwise
+func (i Day) IsADay() bool {
 	for _, v := range _DayValues {
 		if i == v {
 			return true
@@ -164,8 +164,8 @@ func NumberValues() []Number {
 	return _NumberValues
 }
 
-// belongsToNumber returns "true" if the value is listed in the enum definition. "false" otherwise
-func (i Number) belongsToNumber() bool {
+// IsANumber returns "true" if the value is listed in the enum definition. "false" otherwise
+func (i Number) IsANumber() bool {
 	for _, v := range _NumberValues {
 		if i == v {
 			return true
@@ -244,8 +244,8 @@ func GapValues() []Gap {
 	return _GapValues
 }
 
-// belongsToGap returns "true" if the value is listed in the enum definition. "false" otherwise
-func (i Gap) belongsToGap() bool {
+// IsAGap returns "true" if the value is listed in the enum definition. "false" otherwise
+func (i Gap) IsAGap() bool {
 	for _, v := range _GapValues {
 		if i == v {
 			return true
@@ -303,8 +303,8 @@ func NumValues() []Num {
 	return _NumValues
 }
 
-// belongsToNum returns "true" if the value is listed in the enum definition. "false" otherwise
-func (i Num) belongsToNum() bool {
+// IsANum returns "true" if the value is listed in the enum definition. "false" otherwise
+func (i Num) IsANum() bool {
 	for _, v := range _NumValues {
 		if i == v {
 			return true
@@ -375,8 +375,8 @@ func UnumValues() []Unum {
 	return _UnumValues
 }
 
-// belongsToUnum returns "true" if the value is listed in the enum definition. "false" otherwise
-func (i Unum) belongsToUnum() bool {
+// IsAUnum returns "true" if the value is listed in the enum definition. "false" otherwise
+func (i Unum) IsAUnum() bool {
 	for _, v := range _UnumValues {
 		if i == v {
 			return true
@@ -465,8 +465,8 @@ func PrimeValues() []Prime {
 	return _PrimeValues
 }
 
-// belongsToPrime returns "true" if the value is listed in the enum definition. "false" otherwise
-func (i Prime) belongsToPrime() bool {
+// IsAPrime returns "true" if the value is listed in the enum definition. "false" otherwise
+func (i Prime) IsAPrime() bool {
 	_, ok := _PrimeMap[i]
 	return ok
 }
@@ -548,8 +548,8 @@ func PrimeValues() []Prime {
 	return _PrimeValues
 }
 
-// belongsToPrime returns "true" if the value is listed in the enum definition. "false" otherwise
-func (i Prime) belongsToPrime() bool {
+// IsAPrime returns "true" if the value is listed in the enum definition. "false" otherwise
+func (i Prime) IsAPrime() bool {
 	_, ok := _PrimeMap[i]
 	return ok
 }
@@ -649,8 +649,8 @@ func PrimeValues() []Prime {
 	return _PrimeValues
 }
 
-// belongsToPrime returns "true" if the value is listed in the enum definition. "false" otherwise
-func (i Prime) belongsToPrime() bool {
+// IsAPrime returns "true" if the value is listed in the enum definition. "false" otherwise
+func (i Prime) IsAPrime() bool {
 	_, ok := _PrimeMap[i]
 	return ok
 }
@@ -745,8 +745,8 @@ func PrimeValues() []Prime {
 	return _PrimeValues
 }
 
-// belongsToPrime returns "true" if the value is listed in the enum definition. "false" otherwise
-func (i Prime) belongsToPrime() bool {
+// IsAPrime returns "true" if the value is listed in the enum definition. "false" otherwise
+func (i Prime) IsAPrime() bool {
 	_, ok := _PrimeMap[i]
 	return ok
 }
@@ -846,8 +846,8 @@ func PrimeValues() []Prime {
 	return _PrimeValues
 }
 
-// belongsToPrime returns "true" if the value is listed in the enum definition. "false" otherwise
-func (i Prime) belongsToPrime() bool {
+// IsAPrime returns "true" if the value is listed in the enum definition. "false" otherwise
+func (i Prime) IsAPrime() bool {
 	_, ok := _PrimeMap[i]
 	return ok
 }
@@ -958,8 +958,8 @@ func PrimeValues() []Prime {
 	return _PrimeValues
 }
 
-// belongsToPrime returns "true" if the value is listed in the enum definition. "false" otherwise
-func (i Prime) belongsToPrime() bool {
+// IsAPrime returns "true" if the value is listed in the enum definition. "false" otherwise
+func (i Prime) IsAPrime() bool {
 	_, ok := _PrimeMap[i]
 	return ok
 }

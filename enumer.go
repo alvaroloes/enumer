@@ -24,8 +24,8 @@ func %[1]sValues() []%[1]s {
 
 // Arguments to format are:
 //	[1]: type name
-const stringBelongsMethodLoop = `// belongsTo%[1]s returns "true" if the value is listed in the enum definition. "false" otherwise
-func (i %[1]s) belongsTo%[1]s() bool {
+const stringBelongsMethodLoop = `// IsA%[1]s returns "true" if the value is listed in the enum definition. "false" otherwise
+func (i %[1]s) IsA%[1]s() bool {
 	for _, v := range _%[1]sValues {
 		if i == v {
 			return true
@@ -36,8 +36,8 @@ func (i %[1]s) belongsTo%[1]s() bool {
 `
 // Arguments to format are:
 //	[1]: type name
-const stringBelongsMethodSet = `// belongsTo%[1]s returns "true" if the value is listed in the enum definition. "false" otherwise
-func (i %[1]s) belongsTo%[1]s() bool {
+const stringBelongsMethodSet = `// IsA%[1]s returns "true" if the value is listed in the enum definition. "false" otherwise
+func (i %[1]s) IsA%[1]s() bool {
 	_, ok := _%[1]sMap[i] 
 	return ok
 }
