@@ -433,6 +433,8 @@ func (i Prime) String() string {
 	return fmt.Sprintf("Prime(%d)", i)
 }
 
+var _PrimeValues = []Prime{2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 41, 43}
+
 var _PrimeNameToValueMap = map[string]Prime{
 	_PrimeName[0:2]:   2,
 	_PrimeName[2:4]:   3,
@@ -456,6 +458,17 @@ func PrimeString(s string) (Prime, error) {
 		return val, nil
 	}
 	return 0, fmt.Errorf("%s does not belong to Prime values", s)
+}
+
+// PrimeValues returns all values of the enum
+func PrimeValues() []Prime {
+	return _PrimeValues
+}
+
+// belongsToPrime returns "true" if the value is listed in the enum definition. "false" otherwise
+func (i Prime) belongsToPrime() bool {
+	_, ok := _PrimeMap[i]
+	return ok
 }
 `
 const prime_json_in = `type Prime int
@@ -503,6 +516,8 @@ func (i Prime) String() string {
 	return fmt.Sprintf("Prime(%d)", i)
 }
 
+var _PrimeValues = []Prime{2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 41, 43}
+
 var _PrimeNameToValueMap = map[string]Prime{
 	_PrimeName[0:2]:   2,
 	_PrimeName[2:4]:   3,
@@ -526,6 +541,17 @@ func PrimeString(s string) (Prime, error) {
 		return val, nil
 	}
 	return 0, fmt.Errorf("%s does not belong to Prime values", s)
+}
+
+// PrimeValues returns all values of the enum
+func PrimeValues() []Prime {
+	return _PrimeValues
+}
+
+// belongsToPrime returns "true" if the value is listed in the enum definition. "false" otherwise
+func (i Prime) belongsToPrime() bool {
+	_, ok := _PrimeMap[i]
+	return ok
 }
 
 // MarshalJSON implements the json.Marshaler interface for Prime
@@ -591,6 +617,8 @@ func (i Prime) String() string {
 	return fmt.Sprintf("Prime(%d)", i)
 }
 
+var _PrimeValues = []Prime{2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 41, 43}
+
 var _PrimeNameToValueMap = map[string]Prime{
 	_PrimeName[0:2]:   2,
 	_PrimeName[2:4]:   3,
@@ -614,6 +642,17 @@ func PrimeString(s string) (Prime, error) {
 		return val, nil
 	}
 	return 0, fmt.Errorf("%s does not belong to Prime values", s)
+}
+
+// PrimeValues returns all values of the enum
+func PrimeValues() []Prime {
+	return _PrimeValues
+}
+
+// belongsToPrime returns "true" if the value is listed in the enum definition. "false" otherwise
+func (i Prime) belongsToPrime() bool {
+	_, ok := _PrimeMap[i]
+	return ok
 }
 
 // MarshalText implements the encoding.TextMarshaler interface for Prime
@@ -674,6 +713,8 @@ func (i Prime) String() string {
 	return fmt.Sprintf("Prime(%d)", i)
 }
 
+var _PrimeValues = []Prime{2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 41, 43}
+
 var _PrimeNameToValueMap = map[string]Prime{
 	_PrimeName[0:2]:   2,
 	_PrimeName[2:4]:   3,
@@ -697,6 +738,17 @@ func PrimeString(s string) (Prime, error) {
 		return val, nil
 	}
 	return 0, fmt.Errorf("%s does not belong to Prime values", s)
+}
+
+// PrimeValues returns all values of the enum
+func PrimeValues() []Prime {
+	return _PrimeValues
+}
+
+// belongsToPrime returns "true" if the value is listed in the enum definition. "false" otherwise
+func (i Prime) belongsToPrime() bool {
+	_, ok := _PrimeMap[i]
+	return ok
 }
 
 // MarshalYAML implements a YAML Marshaler for Prime
@@ -762,6 +814,8 @@ func (i Prime) String() string {
 	return fmt.Sprintf("Prime(%d)", i)
 }
 
+var _PrimeValues = []Prime{2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 41, 43}
+
 var _PrimeNameToValueMap = map[string]Prime{
 	_PrimeName[0:2]:   2,
 	_PrimeName[2:4]:   3,
@@ -785,6 +839,17 @@ func PrimeString(s string) (Prime, error) {
 		return val, nil
 	}
 	return 0, fmt.Errorf("%s does not belong to Prime values", s)
+}
+
+// PrimeValues returns all values of the enum
+func PrimeValues() []Prime {
+	return _PrimeValues
+}
+
+// belongsToPrime returns "true" if the value is listed in the enum definition. "false" otherwise
+func (i Prime) belongsToPrime() bool {
+	_, ok := _PrimeMap[i]
+	return ok
 }
 
 func (i Prime) Value() (driver.Value, error) {
@@ -861,6 +926,8 @@ func (i Prime) String() string {
 	return fmt.Sprintf("Prime(%d)", i)
 }
 
+var _PrimeValues = []Prime{2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 41, 43}
+
 var _PrimeNameToValueMap = map[string]Prime{
 	_PrimeName[0:2]:   2,
 	_PrimeName[2:4]:   3,
@@ -884,6 +951,17 @@ func PrimeString(s string) (Prime, error) {
 		return val, nil
 	}
 	return 0, fmt.Errorf("%s does not belong to Prime values", s)
+}
+
+// PrimeValues returns all values of the enum
+func PrimeValues() []Prime {
+	return _PrimeValues
+}
+
+// belongsToPrime returns "true" if the value is listed in the enum definition. "false" otherwise
+func (i Prime) belongsToPrime() bool {
+	_, ok := _PrimeMap[i]
+	return ok
 }
 
 // MarshalJSON implements the json.Marshaler interface for Prime

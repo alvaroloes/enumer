@@ -24,7 +24,7 @@ func %[1]sValues() []%[1]s {
 
 // Arguments to format are:
 //	[1]: type name
-const stringBelongsMethod = `// belongsTo%[1]s returns "true" if the value is listed in the enum definition. "false" otherwise
+const stringBelongsMethodLoop = `// belongsTo%[1]s returns "true" if the value is listed in the enum definition. "false" otherwise
 func (i %[1]s) belongsTo%[1]s() bool {
 	for _, v := range _%[1]sValues {
 		if i == v {
@@ -32,6 +32,14 @@ func (i %[1]s) belongsTo%[1]s() bool {
 		}
 	}
 	return false
+}
+`
+// Arguments to format are:
+//	[1]: type name
+const stringBelongsMethodSet = `// belongsTo%[1]s returns "true" if the value is listed in the enum definition. "false" otherwise
+func (i %[1]s) belongsTo%[1]s() bool {
+	_, ok := _%[1]sMap[i] 
+	return ok
 }
 `
 
@@ -70,7 +78,11 @@ func (g *Generator) buildBasicExtras(runs [][]Value, typeName string, runsThresh
 	// Print the basic extra methods
 	g.Printf(stringNameToValueMethod, typeName)
 	g.Printf(stringValuesMethod, typeName)
-	g.Printf(stringBelongsMethod, typeName)
+	if len(runs) < runsThreshold {
+		g.Printf(stringBelongsMethodLoop, typeName)
+	} else { // There is a map of values, the code is simpler then
+		g.Printf(stringBelongsMethodSet, typeName)
+	}
 }
 
 // Arguments to format are:
