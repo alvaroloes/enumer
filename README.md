@@ -5,7 +5,7 @@ It started as a fork of [Rob Pike’s Stringer tool](https://godoc.org/golang.or
 ## Generated functions and methods
 When Enumer is applied to a type, it will generate:
 
-* The following basic methods/function: 
+* The following basic methods/functions: 
 
   * Method `String()`: returns the string representation of the enum value. This makes the enum conform
 the `Stringer` interface, so whenever you print an enum value, you'll get the string name instead of a number.
@@ -13,7 +13,7 @@ the `Stringer` interface, so whenever you print an enum value, you'll get the st
 when you need to read enum values from command line arguments, from a configuration file, or
 from a REST API request... In short, from those places where using the real enum value (an integer) would
 be almost meaningless or hard to trace or use by a human.
-  * Function `<Type>Values()`: returns a slice with all the value of the enum
+  * Function `<Type>Values()`: returns a slice with all the values of the enum
   * Method `IsA<Type>()`: returns true only if the current value is among the values of the enum. Useful for validations.
 * When the flag `json` is provided, two additional methods will be generated, `MarshalJSON()` and `UnmarshalJSON()`. These make
 the enum conform to the `json.Marshaler` and `json.Unmarshaler` interfaces. Very useful to use it in JSON APIs.
