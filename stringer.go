@@ -191,6 +191,7 @@ type Generator struct {
 	pkg *Package     // Package we are scanning.
 }
 
+// Printf prints the string to the output
 func (g *Generator) Printf(format string, args ...interface{}) {
 	fmt.Fprintf(&g.buf, format, args...)
 }
@@ -204,6 +205,7 @@ type File struct {
 	values   []Value // Accumulator for constant values of that type.
 }
 
+// Package holds information about a Go package
 type Package struct {
 	dir      string
 	name     string
