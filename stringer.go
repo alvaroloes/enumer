@@ -62,7 +62,6 @@
 // This is a patched versin of the original stringer. The original generates source code
 // using '_' (underscore) as part of generated golang identifiers. This creates a number of
 // golint warnings. The patched version simply leaves the '_' out
-
 package main
 
 import (
