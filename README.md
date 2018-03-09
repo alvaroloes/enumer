@@ -1,4 +1,4 @@
-# Enumer [![Go Report Card](https://goreportcard.com/badge/github.com/alvaroloes/enumer)](https://goreportcard.com/report/github.com/alvaroloes/enumer) ![cover.run go](https://cover.run/go/github.com/alvaroloes/enumer.svg?tag=golang-1.10)
+# Enumer [![Go Report Card](https://goreportcard.com/badge/github.com/alvaroloes/enumer)](https://goreportcard.com/report/github.com/alvaroloes/enumer) ![cover.run go](https://cover.run/go/github.com/alvaroloes/enumer.svg?tag=golang-1.10)[![GoDoc](https://godoc.org/github.com/alvaroloes/enumer?status.svg)](https://godoc.org/github.com/alvaroloes/enumer)
 Enumer is a tool to generate Go code that adds useful methods to Go enums (constants with a specific type).
 It started as a fork of [Rob Pike’s Stringer tool](https://godoc.org/golang.org/x/tools/cmd/stringer).
 
