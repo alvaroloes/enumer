@@ -119,7 +119,7 @@ func (i %[1]s) MarshalText() ([]byte, error) {
 	return []byte(i.String()), nil
 }
 
-// MarshalText implements the encoding.TextUnmarshaler interface for %[1]s
+// UnmarshalText implements the encoding.TextUnmarshaler interface for %[1]s
 func (i *%[1]s) UnmarshalText(text []byte) error {
 	var err error
 	*i, err = %[1]sString(string(text))

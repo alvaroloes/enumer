@@ -660,7 +660,7 @@ func (i Prime) MarshalText() ([]byte, error) {
 	return []byte(i.String()), nil
 }
 
-// MarshalText implements the encoding.TextUnmarshaler interface for Prime
+// UnmarshalText implements the encoding.TextUnmarshaler interface for Prime
 func (i *Prime) UnmarshalText(text []byte) error {
 	var err error
 	*i, err = PrimeString(string(text))
