@@ -38,7 +38,7 @@ const (
 	Acetaminophen = Paracetamol
 )
 ```
-executing `enumer -type=Pill -json` will generate a new file with four basic method and two extra for JSON:
+executing `enumer -type=Pill -json` will generate a new file with four basic methods and two extra for JSON:
 ```go
 func (i Pill) String() string { 
 	//...
