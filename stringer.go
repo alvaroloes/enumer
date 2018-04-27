@@ -36,10 +36,13 @@ var (
 	sql             = flag.Bool("sql", false, "if true, the Scanner and Valuer interface will be implemented.")
 	json            = flag.Bool("json", false, "if true, json marshaling methods will be generated. Default: false")
 	yaml            = flag.Bool("yaml", false, "if true, yaml marshaling methods will be generated. Default: false")
+	ignoreCase      = flag.Bool("ignorecase", false, "if true, transforming from a string ignores case. Default: false")
+	numeric         = flag.Bool("numeric", false, "if true, transforming from a string allows input of numeric values. Default: false")
 	text            = flag.Bool("text", false, "if true, text marshaling methods will be generated. Default: false")
-	output          = flag.String("output", "", "output file name; default srcdir/<type>_string.go")
+	output          = flag.String("output", "", "output file name; default srcdir/<type>_enumer.go")
 	transformMethod = flag.String("transform", "noop", "enum item name transformation method. Default: noop")
 	trimPrefix      = flag.String("trimprefix", "", "transform each item name by removing a prefix. Default: \"\"")
+	empty           = flag.String("empty", "", "Use an empty string for this enum value. Default: \"\"")
 )
 
 // Usage is a replacement usage function for the flags package.
@@ -92,6 +95,12 @@ func main() {
 	g.Printf("\n")
 	g.Printf("import (\n")
 	g.Printf("\t\"fmt\"\n")
+	if *numeric {
+		g.Printf("\t\"strconv\"\n")
+	}
+	if *ignoreCase || g.transformRequiresStrings(*transformMethod) {
+		g.Printf("\t\"strings\"\n")
+	}
 	if *sql {
 		g.Printf("\t\"database/sql/driver\"\n")
 	}
@@ -102,7 +111,7 @@ func main() {
 
 	// Run generate for each type.
 	for _, typeName := range types {
-		g.generate(typeName, *json, *yaml, *sql, *text, *transformMethod, *trimPrefix)
+		g.generate(typeName, *json, *yaml, *sql, *text, *transformMethod, *trimPrefix, *ignoreCase, *numeric, *empty)
 	}
 
 	// Format the output.
@@ -239,19 +248,64 @@ func (pkg *Package) check(fs *token.FileSet, astFiles []*ast.File) {
 	pkg.typesPkg = typesPkg
 }
 
-func (g *Generator) transformValueNames(values []Value, transformMethod string) {
-	var sep rune
+func (g *Generator) transformRequiresStrings(transformMethod string) bool {
 	switch transformMethod {
+	case "lower":
+	case "upper":
+	case "json":
+	case "snakeu":
+	case "kebabu":
+		return true
+	}
+	return false
+}
+
+func (g *Generator) transformValueNames(values []Value, transformMethod string, empty string) {
+	var sep rune
+	var upper bool
+	var json bool
+	switch transformMethod {
+	case "lower":
+		upper = false
+	case "upper":
+		upper = true
+	case "json":
+		json = true
 	case "snake":
 		sep = '_'
+	case "snakeu":
+		sep = '_'
+		upper = true
 	case "kebab":
 		sep = '-'
+	case "kebabu":
+		sep = '-'
+		upper = true
 	default:
 		return
 	}
 
 	for i := range values {
-		values[i].name = strings.ToLower(name.Delimit(values[i].name, sep))
+		s := values[i].name
+		if json {
+			if len(s) > 1 {
+				values[i].name = strings.ToLower(s[0:1]) + s[1:]
+			} else {
+				values[i].name = strings.ToLower(s)
+			}
+		} else {
+			if sep != 0 {
+				s = name.Delimit(s, sep)
+			}
+			if upper {
+				values[i].name = strings.ToUpper(s)
+			} else {
+				values[i].name = strings.ToLower(s)
+			}
+		}
+		if values[i].name == empty {
+			values[i].name = ""
+		}
 	}
 }
 
@@ -263,7 +317,8 @@ func (g *Generator) trimValueNames(values []Value, prefix string) {
 }
 
 // generate produces the String method for the named type.
-func (g *Generator) generate(typeName string, includeJSON, includeYAML, includeSQL, includeText bool, transformMethod string, trimPrefix string) {
+func (g *Generator) generate(typeName string, includeJSON, includeYAML, includeSQL, includeText bool,
+	transformMethod string, trimPrefix string, ignoreCase bool, numeric bool, empty string) {
 	values := make([]Value, 0, 100)
 	for _, file := range g.pkg.files {
 		// Set the state for this run of the walker.
@@ -281,7 +336,7 @@ func (g *Generator) generate(typeName string, includeJSON, includeYAML, includeS
 
 	g.trimValueNames(values, trimPrefix)
 
-	g.transformValueNames(values, transformMethod)
+	g.transformValueNames(values, transformMethod, empty)
 
 	runs := splitIntoRuns(values)
 	// The decision of which pattern to use depends on the number of
@@ -306,7 +361,18 @@ func (g *Generator) generate(typeName string, includeJSON, includeYAML, includeS
 		g.buildMap(runs, typeName)
 	}
 
-	g.buildBasicExtras(runs, typeName, runsThreshold)
+	if ignoreCase {
+		if transformMethod == "upper" || transformMethod == "snakeu" || transformMethod == "kebabu" {
+			g.buildBasicExtras(runs, typeName, runsThreshold, CaseUpper, numeric)
+		} else if transformMethod == "lower" || transformMethod == "snake" || transformMethod == "kebab" {
+			g.buildBasicExtras(runs, typeName, runsThreshold, CaseLower, numeric)
+		} else {
+			g.buildBasicExtras(runs, typeName, runsThreshold, CaseMixed, numeric)
+		}
+	} else {
+		g.buildBasicExtras(runs, typeName, runsThreshold, CaseNone, numeric)
+	}
+
 	if includeJSON {
 		g.buildJSONMethods(runs, typeName, runsThreshold)
 	}
