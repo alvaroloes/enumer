@@ -39,7 +39,7 @@ var (
 	ignoreCase      = flag.Bool("ignorecase", false, "if true, transforming from a string ignores case. Default: false")
 	numeric         = flag.Bool("numeric", false, "if true, transforming from a string allows input of numeric values. Default: false")
 	text            = flag.Bool("text", false, "if true, text marshaling methods will be generated. Default: false")
-	output          = flag.String("output", "", "output file name; default srcdir/<type>_enumer.go")
+	output          = flag.String("output", "", "output file name; default srcdir/<type>_string.go")
 	transformMethod = flag.String("transform", "noop", "enum item name transformation method. Default: noop")
 	trimPrefix      = flag.String("trimprefix", "", "transform each item name by removing a prefix. Default: \"\"")
 	empty           = flag.String("empty", "", "Use an empty string for this enum value. Default: \"\"")
@@ -120,7 +120,7 @@ func main() {
 	// Write to file.
 	outputName := *output
 	if outputName == "" {
-		baseName := fmt.Sprintf("%s_enumer.go", types[0])
+		baseName := fmt.Sprintf("%s_string.go", types[0])
 		outputName = filepath.Join(dir, strings.ToLower(baseName))
 	}
 	err := ioutil.WriteFile(outputName, src, 0644)
