@@ -165,18 +165,38 @@ func (i %[1]s) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON implements the json.Unmarshaler interface for %[1]s
 func (i *%[1]s) UnmarshalJSON(data []byte) error {
 	var s string
-	if err := json.Unmarshal(data, &s); err != nil {
-		return fmt.Errorf("%[1]s should be a string, got %%s", data)
-	}
-
 	var err error
+	if err = json.Unmarshal(data, &s); err != nil {%[2]s	}
+
 	*i, err = %[1]sString(s)
 	return err
 }
 `
 
-func (g *Generator) buildJSONMethods(runs [][]Value, typeName string, runsThreshold int) {
-	g.Printf(jsonMethods, typeName)
+const jsonNumericCheck = `
+		var val int
+		if err = json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("%[1]s should be a string, got %%s", data)
+		}
+		*i = %[1]s(val)
+		if !i.IsA%[1]s() {
+			return fmt.Errorf("Invalid value for %[1]s (%%d)", val)
+		}
+		return nil
+`
+
+const jsonNoNumericCheck = `
+		return fmt.Errorf("%[1]s should be a string, got %%s", data)
+`
+
+func (g *Generator) buildJSONMethods(runs [][]Value, typeName string, runsThreshold int, numeric bool) {
+	var numCheck string
+	if numeric {
+		numCheck = fmt.Sprintf(jsonNumericCheck, typeName)
+	} else {
+		numCheck = fmt.Sprintf(jsonNoNumericCheck, typeName)
+	}
+	g.Printf(jsonMethods, typeName, numCheck)
 }
 
 // Arguments to format are:

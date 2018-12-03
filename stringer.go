@@ -374,7 +374,7 @@ func (g *Generator) generate(typeName string, includeJSON, includeYAML, includeS
 	}
 
 	if includeJSON {
-		g.buildJSONMethods(runs, typeName, runsThreshold)
+		g.buildJSONMethods(runs, typeName, runsThreshold, numeric)
 	}
 	if includeText {
 		g.buildTextMethods(runs, typeName, runsThreshold)
