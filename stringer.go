@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// +build go1.5
-
-//Enumer is a tool to generate Go code that adds useful methods to Go enums (constants with a specific type).
-//It started as a fork of Rob Pike’s Stringer tool
+// Enumer is a tool to generate Go code that adds useful methods to Go enums (constants with a specific type).
+// It started as a fork of Rob Pike’s Stringer tool
 //
-//Please visit http://github.com/alvaroloes/enumer for a comprehensive documentation
+// Please visit http://github.com/alvaroloes/enumer for a comprehensive documentation
 package main
 
 import (
@@ -18,6 +16,7 @@ import (
 	"go/build"
 	exact "go/constant"
 	"go/format"
+	"go/importer"
 	"go/parser"
 	"go/token"
 	"go/types"
@@ -44,12 +43,12 @@ var (
 
 // Usage is a replacement usage function for the flags package.
 func Usage() {
-	fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
-	fmt.Fprintf(os.Stderr, "\tstringer [flags] -type T [directory]\n")
-	fmt.Fprintf(os.Stderr, "\tstringer [flags] -type T files... # Must be a single package\n")
-	fmt.Fprintf(os.Stderr, "For more information, see:\n")
-	fmt.Fprintf(os.Stderr, "\thttp://godoc.org/golang.org/x/tools/cmd/stringer\n")
-	fmt.Fprintf(os.Stderr, "Flags:\n")
+	_, _ = fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
+	_, _ = fmt.Fprintf(os.Stderr, "\tstringer [flags] -type T [directory]\n")
+	_, _ = fmt.Fprintf(os.Stderr, "\tstringer [flags] -type T files... # Must be a single package\n")
+	_, _ = fmt.Fprintf(os.Stderr, "For more information, see:\n")
+	_, _ = fmt.Fprintf(os.Stderr, "\thttp://godoc.org/golang.org/x/tools/cmd/stringer\n")
+	_, _ = fmt.Fprintf(os.Stderr, "Flags:\n")
 	flag.PrintDefaults()
 }
 
@@ -62,7 +61,7 @@ func main() {
 		flag.Usage()
 		os.Exit(2)
 	}
-	types := strings.Split(*typeNames, ",")
+	typs := strings.Split(*typeNames, ",")
 
 	// We accept either one directory or a list of files. Which do we have?
 	args := flag.Args()
@@ -101,7 +100,7 @@ func main() {
 	g.Printf(")\n")
 
 	// Run generate for each type.
-	for _, typeName := range types {
+	for _, typeName := range typs {
 		g.generate(typeName, *json, *yaml, *sql, *text, *transformMethod, *trimPrefix)
 	}
 
@@ -111,7 +110,7 @@ func main() {
 	// Write to file.
 	outputName := *output
 	if outputName == "" {
-		baseName := fmt.Sprintf("%s_enumer.go", types[0])
+		baseName := fmt.Sprintf("%s_enumer.go", typs[0])
 		outputName = filepath.Join(dir, strings.ToLower(baseName))
 	}
 	err := ioutil.WriteFile(outputName, src, 0644)
@@ -138,7 +137,7 @@ type Generator struct {
 
 // Printf prints the string to the output
 func (g *Generator) Printf(format string, args ...interface{}) {
-	fmt.Fprintf(&g.buf, format, args...)
+	_, _ = fmt.Fprintf(&g.buf, format, args...)
 }
 
 // File holds a single parsed file and associated data.
@@ -187,8 +186,8 @@ func prefixDirectory(directory string, names []string) []string {
 		return names
 	}
 	ret := make([]string, len(names))
-	for i, name := range names {
-		ret[i] = filepath.Join(directory, name)
+	for i, n := range names {
+		ret[i] = filepath.Join(directory, n)
 	}
 	return ret
 }
@@ -201,13 +200,13 @@ func (g *Generator) parsePackage(directory string, names []string, text interfac
 	var astFiles []*ast.File
 	g.pkg = new(Package)
 	fs := token.NewFileSet()
-	for _, name := range names {
-		if !strings.HasSuffix(name, ".go") {
+	for _, n := range names {
+		if !strings.HasSuffix(n, ".go") {
 			continue
 		}
-		parsedFile, err := parser.ParseFile(fs, name, text, 0)
+		parsedFile, err := parser.ParseFile(fs, n, text, 0)
 		if err != nil {
-			log.Fatalf("parsing package: %s: %s", name, err)
+			log.Fatalf("parsing package: %s: %s", n, err)
 		}
 		astFiles = append(astFiles, parsedFile)
 		files = append(files, &File{
@@ -228,7 +227,7 @@ func (g *Generator) parsePackage(directory string, names []string, text interfac
 // check type-checks the package. The package must be OK to proceed.
 func (pkg *Package) check(fs *token.FileSet, astFiles []*ast.File) {
 	pkg.defs = make(map[*ast.Ident]types.Object)
-	config := types.Config{Importer: defaultImporter(), FakeImportC: true}
+	config := types.Config{Importer: importer.Default(), FakeImportC: true}
 	info := &types.Info{
 		Defs: pkg.defs,
 	}
@@ -434,16 +433,16 @@ func (f *File) genDecl(node ast.Node) bool {
 		// We now have a list of names (from one line of source code) all being
 		// declared with the desired type.
 		// Grab their names and actual values and store them in f.values.
-		for _, name := range vspec.Names {
-			if name.Name == "_" {
+		for _, n := range vspec.Names {
+			if n.Name == "_" {
 				continue
 			}
 			// This dance lets the type checker find the values for us. It's a
-			// bit tricky: look up the object declared by the name, find its
+			// bit tricky: look up the object declared by the n, find its
 			// types.Const, and extract its value.
-			obj, ok := f.pkg.defs[name]
+			obj, ok := f.pkg.defs[n]
 			if !ok {
-				log.Fatalf("no value for constant %s", name)
+				log.Fatalf("no value for constant %s", n)
 			}
 			info := obj.Type().Underlying().(*types.Basic).Info()
 			if info&types.IsInteger == 0 {
@@ -451,18 +450,18 @@ func (f *File) genDecl(node ast.Node) bool {
 			}
 			value := obj.(*types.Const).Val() // Guaranteed to succeed as this is CONST.
 			if value.Kind() != exact.Int {
-				log.Fatalf("can't happen: constant is not an integer %s", name)
+				log.Fatalf("can't happen: constant is not an integer %s", n)
 			}
 			i64, isInt := exact.Int64Val(value)
 			u64, isUint := exact.Uint64Val(value)
 			if !isInt && !isUint {
-				log.Fatalf("internal error: value of %s is not an integer: %s", name, value.String())
+				log.Fatalf("internal error: value of %s is not an integer: %s", n, value.String())
 			}
 			if !isInt {
 				u64 = uint64(i64)
 			}
 			v := Value{
-				name:   name.Name,
+				name:   n.Name,
 				value:  u64,
 				signed: info&types.IsUnsigned == 0,
 				str:    value.String(),
@@ -495,13 +494,13 @@ func usize(n int) int {
 func (g *Generator) declareIndexAndNameVars(runs [][]Value, typeName string) {
 	var indexes, names []string
 	for i, run := range runs {
-		index, name := g.createIndexAndNameDecl(run, typeName, fmt.Sprintf("_%d", i))
+		index, n := g.createIndexAndNameDecl(run, typeName, fmt.Sprintf("_%d", i))
 		indexes = append(indexes, index)
-		names = append(names, name)
+		names = append(names, n)
 	}
 	g.Printf("const (\n")
-	for _, name := range names {
-		g.Printf("\t%s\n", name)
+	for _, n := range names {
+		g.Printf("\t%s\n", n)
 	}
 	g.Printf(")\n\n")
 	g.Printf("var (")
@@ -513,8 +512,8 @@ func (g *Generator) declareIndexAndNameVars(runs [][]Value, typeName string) {
 
 // declareIndexAndNameVar is the single-run version of declareIndexAndNameVars
 func (g *Generator) declareIndexAndNameVar(run []Value, typeName string) {
-	index, name := g.createIndexAndNameDecl(run, typeName, "")
-	g.Printf("const %s\n", name)
+	index, n := g.createIndexAndNameDecl(run, typeName, "")
+	g.Printf("const %s\n", n)
 	g.Printf("var %s\n", index)
 }
 
@@ -529,14 +528,14 @@ func (g *Generator) createIndexAndNameDecl(run []Value, typeName string, suffix 
 	nameConst := fmt.Sprintf("_%sName%s = %q", typeName, suffix, b.String())
 	nameLen := b.Len()
 	b.Reset()
-	fmt.Fprintf(b, "_%sIndex%s = [...]uint%d{0, ", typeName, suffix, usize(nameLen))
+	_, _ = fmt.Fprintf(b, "_%sIndex%s = [...]uint%d{0, ", typeName, suffix, usize(nameLen))
 	for i, v := range indexes {
 		if i > 0 {
-			fmt.Fprintf(b, ", ")
+			_, _ = fmt.Fprintf(b, ", ")
 		}
-		fmt.Fprintf(b, "%d", v)
+		_, _ = fmt.Fprintf(b, "%d", v)
 	}
-	fmt.Fprintf(b, "}")
+	_, _ = fmt.Fprintf(b, "}")
 	return b.String(), nameConst
 }
 
@@ -569,9 +568,9 @@ func (g *Generator) buildOneRun(runs [][]Value, typeName string) {
 }
 
 // Arguments to format are:
-//	[1]: type name
-//	[2]: size of index element (8 for uint8 etc.)
-//	[3]: less than zero check (for signed types)
+// 	[1]: type name
+// 	[2]: size of index element (8 for uint8 etc.)
+// 	[3]: less than zero check (for signed types)
 const stringOneRun = `func (i %[1]s) String() string {
 	if %[3]si >= %[1]s(len(_%[1]sIndex)-1) {
 		return fmt.Sprintf("%[1]s(%%d)", i)
@@ -581,10 +580,10 @@ const stringOneRun = `func (i %[1]s) String() string {
 `
 
 // Arguments to format are:
-//	[1]: type name
-//	[2]: lowest defined value for type, as a string
-//	[3]: size of index element (8 for uint8 etc.)
-//	[4]: less than zero check (for signed types)
+// 	[1]: type name
+// 	[2]: lowest defined value for type, as a string
+// 	[3]: size of index element (8 for uint8 etc.)
+// 	[4]: less than zero check (for signed types)
 /*
  */
 const stringOneRunWithOffset = `func (i %[1]s) String() string {
