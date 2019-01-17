@@ -27,6 +27,7 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/pascaldekloe/name"
 )
@@ -240,18 +241,57 @@ func (pkg *Package) check(fs *token.FileSet, astFiles []*ast.File) {
 }
 
 func (g *Generator) transformValueNames(values []Value, transformMethod string) {
-	var sep rune
+	var fn func(src string) string
 	switch transformMethod {
 	case "snake":
-		sep = '_'
+		fn = func(s string) string {
+			return strings.ToLower(name.Delimit(s, '_'))
+		}
+	case "snake_upper", "snake-upper":
+		fn = func(s string) string {
+			return strings.ToUpper(name.Delimit(s, '_'))
+		}
 	case "kebab":
-		sep = '-'
+		fn = func(s string) string {
+			return strings.ToLower(name.Delimit(s, '-'))
+		}
+	case "kebab_upper", "kebab-upper":
+		fn = func(s string) string {
+			return strings.ToUpper(name.Delimit(s, '-'))
+		}
+	case "upper":
+		fn = func(s string) string {
+			return strings.ToUpper(s)
+		}
+	case "lower":
+		fn = func(s string) string {
+			return strings.ToLower(s)
+		}
+	case "title":
+		fn = func(s string) string {
+			return strings.Title(s)
+		}
+	case "first":
+		fn = func(s string) string {
+			r, _ := utf8.DecodeRuneInString(s)
+			return string(r)
+		}
+	case "first_upper", "first-upper":
+		fn = func(s string) string {
+			r, _ := utf8.DecodeRuneInString(s)
+			return strings.ToUpper(string(r))
+		}
+	case "first_lower", "first-lower":
+		fn = func(s string) string {
+			r, _ := utf8.DecodeRuneInString(s)
+			return strings.ToLower(string(r))
+		}
 	default:
 		return
 	}
 
 	for i := range values {
-		values[i].name = strings.ToLower(name.Delimit(values[i].name, sep))
+		values[i].name = fn(values[i].name)
 	}
 }
 
