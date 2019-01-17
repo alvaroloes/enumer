@@ -72,13 +72,45 @@ func TestEndToEnd(t *testing.T) {
 			t.Logf("cgo is no enabled for %s", name)
 			continue
 		}
-		// Names are known to be ASCII and long enough.
-		typeName := fmt.Sprintf("%c%s", name[0]+'A'-'a', name[1:len(name)-len(".go")])
-		transformNameMethod := "noop"
 
-		if name == "transform.go" {
-			typeName = "CamelCaseValue"
+		// Names are known to be ASCII and long enough.
+		var typeName string
+		var transformNameMethod string
+
+		switch name {
+		case "transform_snake.go":
+			typeName = "SnakeCaseValue"
 			transformNameMethod = "snake"
+		case "transform_snake_upper.go":
+			typeName = "SnakeUpperCaseValue"
+			transformNameMethod = "snake-upper"
+		case "transform_kebab.go":
+			typeName = "KebabCaseValue"
+			transformNameMethod = "kebab"
+		case "transform_kebab_upper.go":
+			typeName = "KebabUpperCaseValue"
+			transformNameMethod = "kebab-upper"
+		case "transform_upper.go":
+			typeName = "UpperCaseValue"
+			transformNameMethod = "upper"
+		case "transform_lower.go":
+			typeName = "LowerCaseValue"
+			transformNameMethod = "lower"
+		case "transform_title.go":
+			typeName = "TitleCaseValue"
+			transformNameMethod = "title"
+		case "transform_first.go":
+			typeName = "FirstCaseValue"
+			transformNameMethod = "first"
+		case "transform_first_upper.go":
+			typeName = "FirstUpperCaseValue"
+			transformNameMethod = "first-upper"
+		case "transform_first_lower.go":
+			typeName = "FirstLowerCaseValue"
+			transformNameMethod = "first-lower"
+		default:
+			typeName = fmt.Sprintf("%c%s", name[0]+'A'-'a', name[1:len(name)-len(".go")])
+			transformNameMethod = "noop"
 		}
 
 		stringerCompileAndRun(t, dir, stringer, typeName, name, transformNameMethod)
