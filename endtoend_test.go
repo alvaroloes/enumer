@@ -93,6 +93,9 @@ func TestEndToEnd(t *testing.T) {
 		case "transform_first_lower.go":
 			typeName = "FirstLowerCaseValue"
 			transformNameMethod = "first-lower"
+		case "transform_whitespace.go":
+			typeName = "WhitespaceSeparatedValue"
+			transformNameMethod = "whitespace"
 		default:
 			typeName = fmt.Sprintf("%c%s", name[0]+'A'-'a', name[1:len(name)-len(".go")])
 			transformNameMethod = "noop"

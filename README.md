@@ -29,6 +29,7 @@ When Enumer is applied to a type, it will generate:
 - When the flag `sql` is provided, the methods for implementing the Scanner and Valuer interfaces will be also generated.
   Useful when storing the enum in a database.
 
+
 For example, if we have an enum type called `Pill`,
 
 ```go
@@ -120,7 +121,7 @@ name := MyTypeValue.String() // name => "MyTypeValue"
 
 Sometimes you need to use some other string representation format than CamelCase (i.e. in JSON).
 
-To transform it from CamelCase to snake_case or kebab-case, you can use the `transform` flag.
+To transform it from CamelCase to another format, you can use the `transform` flag.
 
 For example, the command `enumer -type=MyType -json -transform=snake` would generate the following string representation:
 
@@ -128,7 +129,7 @@ For example, the command `enumer -type=MyType -json -transform=snake` would gene
 name := MyTypeValue.String() // name => "my_type_value"
 ```
 
-**Note**: The transformation only works form CamelCase to snake_case or kebab-case, not the other way around.
+**Note**: The transformation only works from CamelCase to snake_case or kebab-case, not the other way around.
 
 ### Transformers
 
@@ -142,6 +143,7 @@ name := MyTypeValue.String() // name => "my_type_value"
 - first (Use first character of string)
 - first-lower (same as first only lower case)
 - first-upper (same as first only upper case)
+- whitespace
 
 ## How to use
 
@@ -152,7 +154,7 @@ There are four boolean flags: `json`, `text`, `yaml` and `sql`. You can use any 
 
 For enum string representation transformation the `transform` and `trimprefix` flags
 were added (i.e. `enumer -type=MyType -json -transform=snake`).
-Possible transform values are `snake` and `kebab` for transformation to snake_case and kebab-case accordingly.
+Possible transform values are listed above in the [transformers](#transformers) section.
 The default value for `transform` flag is `noop` which means no transformation will be performed.
 
 If a prefix is provided via the `trimprefix` flag, it will be trimmed from the start of each name (before
