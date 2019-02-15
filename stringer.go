@@ -96,7 +96,7 @@ func main() {
 	if *sql {
 		g.Printf("\t\"database/sql/driver\"\n")
 	}
-	if *json {
+	if *json || *graphqlgo {
 		g.Printf("\t\"encoding/json\"\n")
 	}
 	g.Printf(")\n")
