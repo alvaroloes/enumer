@@ -176,12 +176,21 @@ func (Day) ImplementsGraphQLType(name string) bool {
 
 func (i *Day) UnmarshalGraphQL(input interface{}) error {
 	if str, ok := input.(string); ok {
-		if val, ok := _DayMap[i]; ok {
-			return val
+		if val, ok := _DayNameToValueMap[str]; ok {
+			i = &val
+			return nil
 		}
 		return fmt.Errorf("%s is not a valid Day", str)
 	}
 	return fmt.Errorf("wrong type for Day: %T", input)
+}
+
+// MarshalJSON is a custom marshaler for Day
+//
+// This function will be called whenever you
+// query for fields that use the Day type
+func (i Day) MarshalJSON() ([]byte, error) {
+	return json.Marshal(i.String())
 }
 `
 

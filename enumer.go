@@ -39,7 +39,7 @@ func (i %[1]s) IsA%[1]s() bool {
 //	[1]: type name
 const stringBelongsMethodSet = `// IsA%[1]s returns "true" if the value is listed in the enum definition. "false" otherwise
 func (i %[1]s) IsA%[1]s() bool {
-	_, ok := _%[1]sMap[i] 
+	_, ok := _%[1]sMap[i]
 	return ok
 }
 `
@@ -164,12 +164,21 @@ func (%[1]s) ImplementsGraphQLType(name string) bool {
 
 func (i *%[1]s) UnmarshalGraphQL(input interface{}) error {
 	if str, ok := input.(string); ok {
-		if val, ok := _%[1]sMap[i]; ok {
-			return val
+		if val, ok := _%[1]sNameToValueMap[str]; ok {
+			i = &val
+			return nil
 		}
 		return fmt.Errorf("%%s is not a valid %[1]s", str)
 	}
 	return fmt.Errorf("wrong type for %[1]s: %%T", input)
+}
+
+// MarshalJSON is a custom marshaler for %[1]s
+//
+// This function will be called whenever you
+// query for fields that use the %[1]s type
+func (i %[1]s) MarshalJSON() ([]byte, error) {
+	return json.Marshal(i.String())
 }
 `
 
