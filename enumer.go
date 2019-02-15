@@ -155,3 +155,24 @@ func (i *%[1]s) UnmarshalYAML(unmarshal func(interface{}) error) error {
 func (g *Generator) buildYAMLMethods(runs [][]Value, typeName string, runsThreshold int) {
 	g.Printf(yamlMethods, typeName)
 }
+
+const graphqlgoMethods = `
+// ImplementsGraphQLType tells graphql-go to use this enum to resolve the %[1]s GraphQL enum type
+func (%[1]s) ImplementsGraphQLType(name string) bool {
+	return name == "%[1]s"
+}
+
+func (i *%[1]s) UnmarshalGraphQL(input interface{}) error {
+	if str, ok := input.(string); ok {
+		if val, ok := _%[1]sMap[i]; ok {
+			return val
+		}
+		return fmt.Errorf("%%s is not a valid %[1]s", str)
+	}
+	return fmt.Errorf("wrong type for %[1]s: %%T", input)
+}
+`
+
+func (g *Generator) buildGraphQLGoMethods(runs [][]Value, typeName string, runsThreshold int) {
+	g.Printf(graphqlgoMethods, typeName)
+}
