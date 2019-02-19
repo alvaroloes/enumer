@@ -177,7 +177,7 @@ func (Day) ImplementsGraphQLType(name string) bool {
 func (i *Day) UnmarshalGraphQL(input interface{}) error {
 	if str, ok := input.(string); ok {
 		if val, ok := _DayNameToValueMap[str]; ok {
-			i = &val
+			*i = val
 			return nil
 		}
 		return fmt.Errorf("%s is not a valid Day", str)

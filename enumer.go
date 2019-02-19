@@ -165,7 +165,7 @@ func (%[1]s) ImplementsGraphQLType(name string) bool {
 func (i *%[1]s) UnmarshalGraphQL(input interface{}) error {
 	if str, ok := input.(string); ok {
 		if val, ok := _%[1]sNameToValueMap[str]; ok {
-			i = &val
+			*i = val
 			return nil
 		}
 		return fmt.Errorf("%%s is not a valid %[1]s", str)
