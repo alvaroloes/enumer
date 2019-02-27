@@ -50,14 +50,14 @@ func %[1]sString(s string) (%[1]s, error) {
 // Arguments to format are:
 //      [1]: type name
 const stringNumericCheck = `
-        i, err := strconv.Atoi(s)
-        if err == nil {
-                for _, v := range _%[1]sNameToValueMap {
-                        if int(v) == i {
-                                return v, nil
-                        }
-                }
-        }`
+	i, err := strconv.Atoi(s)
+	if err == nil {
+		for _, v := range _%[1]sNameToValueMap {
+			if int(v) == i {
+				return v, nil
+			}
+		}
+	}`
 
 type CaseMatch int
 
@@ -174,19 +174,19 @@ func (i *%[1]s) UnmarshalJSON(data []byte) error {
 `
 
 const jsonNumericCheck = `
-                var val int
-                if err = json.Unmarshal(data, &val); err != nil {
-                        return fmt.Errorf("%[1]s should be a string, got %%s", data)
-                }
-                *i = %[1]s(val)
-                if !i.IsA%[1]s() {
-                        return fmt.Errorf("Invalid value for %[1]s (%%d)", val)
-                }
-                return nil
+		var val int
+		if err = json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("%[1]s should be a string, got %%s", data)
+		}
+		*i = %[1]s(val)
+		if !i.IsA%[1]s() {
+			return fmt.Errorf("Invalid value for %[1]s (%%d)", val)
+		}
+		return nil
 `
 
 const jsonNoNumericCheck = `
-                return fmt.Errorf("%[1]s should be a string, got %%s", data)
+		return fmt.Errorf("%[1]s should be a string, got %%s", data)
 `
 
 func (g *Generator) buildJSONMethods(runs [][]Value, typeName string, runsThreshold int, numeric bool) {

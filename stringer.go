@@ -5,9 +5,9 @@
 // +build go1.5
 
 //Enumer is a tool to generate Go code that adds useful methods to Go enums (constants with a specific type).
-//It started as a fork of Rob Pike’s Stringer tool
+//This is a fork of http://github.com/alvaroloes/enumer, which started as a fork of Rob Pike’s Stringer tool
 //
-//Please visit http://github.com/alvaroloes/enumer for a comprehensive documentation
+//Please visit http://github.com/SpectraLogic/enumer for comprehensive documentation
 package main
 
 import (
@@ -97,10 +97,10 @@ var (
 // Usage is a replacement usage function for the flags package.
 func Usage() {
 	fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
-	fmt.Fprintf(os.Stderr, "\tstringer [flags] -type T [directory]\n")
-	fmt.Fprintf(os.Stderr, "\tstringer [flags] -type T files... # Must be a single package\n")
+	fmt.Fprintf(os.Stderr, "\tenumer [flags] -type T [directory]\n")
+	fmt.Fprintf(os.Stderr, "\tenumer [flags] -type T files... # Must be a single package\n")
 	fmt.Fprintf(os.Stderr, "For more information, see:\n")
-	fmt.Fprintf(os.Stderr, "\thttp://godoc.org/golang.org/x/tools/cmd/stringer\n")
+	fmt.Fprintf(os.Stderr, "\thttp://github.com/SpectraLogic/enumer\n")
 	fmt.Fprintf(os.Stderr, "Flags:\n")
 	flag.PrintDefaults()
 }
