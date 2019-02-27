@@ -16,41 +16,40 @@ import (
 
 // Golden represents a test case.
 type Golden struct {
-	name   string
-	input  string // input; the package clause is provided when running the test.
-	output string // exected output.
+	name    string
+	input   string // input; the package clause is provided when running the test.
+	output  string // exected output.
+	flags   map[string]bool
+	options map[string]string
 }
+
+var noFlags = map[string]bool{}
+var noOptions = map[string]string{}
 
 var golden = []Golden{
-	{"day", dayIn, dayOut},
-	{"offset", offsetIn, offsetOut},
-	{"gap", gapIn, gapOut},
-	{"num", numIn, numOut},
-	{"unum", unumIn, unumOut},
-	{"prime", primeIn, primeOut},
-}
-
-var goldenJSON = []Golden{
-	{"prime", primeJsonIn, primeJsonOut},
-}
-var goldenText = []Golden{
-	{"prime", primeTextIn, primeTextOut},
-}
-
-var goldenYAML = []Golden{
-	{"prime", primeYamlIn, primeYamlOut},
-}
-
-var goldenSQL = []Golden{
-	{"prime", primeSqlIn, primeSqlOut},
-}
-
-var goldenJSONAndSQL = []Golden{
-	{"prime", primeJsonAndSqlIn, primeJsonAndSqlOut},
-}
-
-var goldenPrefix = []Golden{
-	{"prefix", prefixIn, dayOut},
+	{"day", dayIn, dayOut, noFlags, noOptions},
+	{"offset", offsetIn, offsetOut, noFlags, noOptions},
+	{"gap", gapIn, gapOut, noFlags, noOptions},
+	{"num", numIn, numOut, noFlags, noOptions},
+	{"unum", unumIn, unumOut, noFlags, noOptions},
+	{"prime", primeIn, primeOut, noFlags, noOptions},
+	{"prime", primeJsonIn, primeJsonOut, map[string]bool{IncludeJSON: true}, noOptions},
+	{"prime", primeTextIn, primeTextOut, map[string]bool{IncludeText: true}, noOptions},
+	{"prime", primeYamlIn, primeYamlOut, map[string]bool{IncludeYAML: true}, noOptions},
+	{"prime", primeSqlIn, primeSqlOut, map[string]bool{IncludeSQL: true}, noOptions},
+	{"prime", primeJsonAndSqlIn, primeJsonAndSqlOut, map[string]bool{IncludeJSON: true, IncludeSQL: true}, noOptions},
+	{"prefix", prefixIn, dayOut, noFlags, map[string]string{TrimPrefix: "Day"}},
+	{"camel", camelIn, camelOut, noFlags, noOptions},
+	{"camel", camelIn, strings.Replace(camelOut, camelString, strings.ToUpper(camelString), 1), noFlags, map[string]string{TransformMethod: ToUpper}},
+	{"camel", camelIn, strings.Replace(camelOut, camelString, strings.ToLower(camelString), 1), noFlags, map[string]string{TransformMethod: ToLower}},
+	{"camel", camelIn, strings.Replace(camelOut, camelString, camelJSON, 1), noFlags, map[string]string{TransformMethod: ToJSON}},
+	{"camel", camelIn, camelSnakeOut, noFlags, map[string]string{TransformMethod: ToSnake}},
+	{"camel", camelIn, strings.Replace(camelSnakeOut, camelSnake, strings.ToUpper(camelSnake), 1), noFlags, map[string]string{TransformMethod: ToSnakeUpper}},
+	{"camel", camelIn, strings.Replace(camelSnakeOut, camelSnake, camelKebab, 1), noFlags, map[string]string{TransformMethod: ToKebab}},
+	{"camel", camelIn, strings.Replace(camelSnakeOut, camelSnake, strings.ToUpper(camelKebab), 1), noFlags, map[string]string{TransformMethod: ToKebabUpper}},
+	{"camel", camelIn, camelIgnoreLowerOut, map[string]bool{IgnoreCase: true, IncludeJSON: true, AllowNumeric: true}, map[string]string{TransformMethod: ToLower}},
+	{"camel", camelIn, camelIgnoreUpperOut, map[string]bool{IgnoreCase: true, IncludeJSON: true, AllowNumeric: true}, map[string]string{TransformMethod: ToUpper}},
+	{"camel", camelIn, camelIgnoreJSONOut, map[string]bool{IgnoreCase: true, IncludeJSON: true, AllowNumeric: true}, map[string]string{TransformMethod: ToJSON}},
 }
 
 // Each example starts with "type XXX [u]int", with a single space separating them.
@@ -116,6 +115,373 @@ func (i Day) IsADay() bool {
 	return false
 }
 `
+
+// Camel case test: enumeration with camel case tags
+const camelIn = `type Camel int
+const (
+	EnumFirst Camel = iota
+	EnumSecond
+	EnumThird
+	EnumFourth
+	EnumFifth
+	EnumSixth
+	EnumSeventh
+)
+`
+
+const camelOut = `
+const _CamelName = "EnumFirstEnumSecondEnumThirdEnumFourthEnumFifthEnumSixthEnumSeventh"
+
+var _CamelIndex = [...]uint8{0, 9, 19, 28, 38, 47, 56, 67}
+
+func (i Camel) String() string {
+	if i < 0 || i >= Camel(len(_CamelIndex)-1) {
+		return fmt.Sprintf("Camel(%d)", i)
+	}
+	return _CamelName[_CamelIndex[i]:_CamelIndex[i+1]]
+}
+
+var _CamelValues = []Camel{0, 1, 2, 3, 4, 5, 6}
+
+var _CamelNameToValueMap = map[string]Camel{
+	_CamelName[0:9]:   0,
+	_CamelName[9:19]:  1,
+	_CamelName[19:28]: 2,
+	_CamelName[28:38]: 3,
+	_CamelName[38:47]: 4,
+	_CamelName[47:56]: 5,
+	_CamelName[56:67]: 6,
+}
+
+// CamelString retrieves an enum value from the enum constants string name.
+// Throws an error if the param is not part of the enum.
+func CamelString(s string) (Camel, error) {
+	if val, ok := _CamelNameToValueMap[s]; ok {
+		return val, nil
+	}
+	return 0, fmt.Errorf("%s does not belong to Camel values", s)
+}
+
+// CamelValues returns all values of the enum
+func CamelValues() []Camel {
+	return _CamelValues
+}
+
+// IsACamel returns "true" if the value is listed in the enum definition. "false" otherwise
+func (i Camel) IsACamel() bool {
+	for _, v := range _CamelValues {
+		if i == v {
+			return true
+		}
+	}
+	return false
+}
+`
+
+const camelIgnoreLowerOut = `
+const _CamelName = "enumfirstenumsecondenumthirdenumfourthenumfifthenumsixthenumseventh"
+
+var _CamelIndex = [...]uint8{0, 9, 19, 28, 38, 47, 56, 67}
+
+func (i Camel) String() string {
+	if i < 0 || i >= Camel(len(_CamelIndex)-1) {
+		return fmt.Sprintf("Camel(%d)", i)
+	}
+	return _CamelName[_CamelIndex[i]:_CamelIndex[i+1]]
+}
+
+var _CamelValues = []Camel{0, 1, 2, 3, 4, 5, 6}
+
+var _CamelNameToValueMap = map[string]Camel{
+	_CamelName[0:9]:   0,
+	_CamelName[9:19]:  1,
+	_CamelName[19:28]: 2,
+	_CamelName[28:38]: 3,
+	_CamelName[38:47]: 4,
+	_CamelName[47:56]: 5,
+	_CamelName[56:67]: 6,
+}
+
+// CamelString retrieves an enum value from the enum constants string name.
+// Throws an error if the param is not part of the enum.
+func CamelString(s string) (Camel, error) {
+	if val, ok := _CamelNameToValueMap[strings.ToLower(s)]; ok {
+		return val, nil
+	}
+	i, err := strconv.Atoi(s)
+	if err == nil {
+		for _, v := range _CamelNameToValueMap {
+			if int(v) == i {
+				return v, nil
+			}
+		}
+	}
+	return 0, fmt.Errorf("%s does not belong to Camel values", s)
+}
+
+// CamelValues returns all values of the enum
+func CamelValues() []Camel {
+	return _CamelValues
+}
+
+// IsACamel returns "true" if the value is listed in the enum definition. "false" otherwise
+func (i Camel) IsACamel() bool {
+	for _, v := range _CamelValues {
+		if i == v {
+			return true
+		}
+	}
+	return false
+}
+
+// MarshalJSON implements the json.Marshaler interface for Camel
+func (i Camel) MarshalJSON() ([]byte, error) {
+	return json.Marshal(i.String())
+}
+
+// UnmarshalJSON implements the json.Unmarshaler interface for Camel
+func (i *Camel) UnmarshalJSON(data []byte) error {
+	var s string
+	var err error
+	if err = json.Unmarshal(data, &s); err != nil {
+		var val int
+		if err = json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("Camel should be a string, got %s", data)
+		}
+		*i = Camel(val)
+		if !i.IsACamel() {
+			return fmt.Errorf("Invalid value for Camel (%d)", val)
+		}
+		return nil
+	}
+
+	*i, err = CamelString(s)
+	return err
+}
+`
+
+const camelIgnoreUpperOut = `
+const _CamelName = "ENUMFIRSTENUMSECONDENUMTHIRDENUMFOURTHENUMFIFTHENUMSIXTHENUMSEVENTH"
+
+var _CamelIndex = [...]uint8{0, 9, 19, 28, 38, 47, 56, 67}
+
+func (i Camel) String() string {
+	if i < 0 || i >= Camel(len(_CamelIndex)-1) {
+		return fmt.Sprintf("Camel(%d)", i)
+	}
+	return _CamelName[_CamelIndex[i]:_CamelIndex[i+1]]
+}
+
+var _CamelValues = []Camel{0, 1, 2, 3, 4, 5, 6}
+
+var _CamelNameToValueMap = map[string]Camel{
+	_CamelName[0:9]:   0,
+	_CamelName[9:19]:  1,
+	_CamelName[19:28]: 2,
+	_CamelName[28:38]: 3,
+	_CamelName[38:47]: 4,
+	_CamelName[47:56]: 5,
+	_CamelName[56:67]: 6,
+}
+
+// CamelString retrieves an enum value from the enum constants string name.
+// Throws an error if the param is not part of the enum.
+func CamelString(s string) (Camel, error) {
+	if val, ok := _CamelNameToValueMap[strings.ToUpper(s)]; ok {
+		return val, nil
+	}
+	i, err := strconv.Atoi(s)
+	if err == nil {
+		for _, v := range _CamelNameToValueMap {
+			if int(v) == i {
+				return v, nil
+			}
+		}
+	}
+	return 0, fmt.Errorf("%s does not belong to Camel values", s)
+}
+
+// CamelValues returns all values of the enum
+func CamelValues() []Camel {
+	return _CamelValues
+}
+
+// IsACamel returns "true" if the value is listed in the enum definition. "false" otherwise
+func (i Camel) IsACamel() bool {
+	for _, v := range _CamelValues {
+		if i == v {
+			return true
+		}
+	}
+	return false
+}
+
+// MarshalJSON implements the json.Marshaler interface for Camel
+func (i Camel) MarshalJSON() ([]byte, error) {
+	return json.Marshal(i.String())
+}
+
+// UnmarshalJSON implements the json.Unmarshaler interface for Camel
+func (i *Camel) UnmarshalJSON(data []byte) error {
+	var s string
+	var err error
+	if err = json.Unmarshal(data, &s); err != nil {
+		var val int
+		if err = json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("Camel should be a string, got %s", data)
+		}
+		*i = Camel(val)
+		if !i.IsACamel() {
+			return fmt.Errorf("Invalid value for Camel (%d)", val)
+		}
+		return nil
+	}
+
+	*i, err = CamelString(s)
+	return err
+}
+`
+
+const camelIgnoreJSONOut = `
+const _CamelName = "enumFirstenumSecondenumThirdenumFourthenumFifthenumSixthenumSeventh"
+
+var _CamelIndex = [...]uint8{0, 9, 19, 28, 38, 47, 56, 67}
+
+func (i Camel) String() string {
+	if i < 0 || i >= Camel(len(_CamelIndex)-1) {
+		return fmt.Sprintf("Camel(%d)", i)
+	}
+	return _CamelName[_CamelIndex[i]:_CamelIndex[i+1]]
+}
+
+var _CamelValues = []Camel{0, 1, 2, 3, 4, 5, 6}
+
+var _CamelNameToValueMap = map[string]Camel{
+	_CamelName[0:9]:   0,
+	_CamelName[9:19]:  1,
+	_CamelName[19:28]: 2,
+	_CamelName[28:38]: 3,
+	_CamelName[38:47]: 4,
+	_CamelName[47:56]: 5,
+	_CamelName[56:67]: 6,
+}
+
+// CamelString retrieves an enum value from the enum constants string name.
+// Throws an error if the param is not part of the enum.
+func CamelString(s string) (Camel, error) {
+	if val, ok := _CamelNameToValueMap[s]; ok {
+		return val, nil
+	}
+	for k, v := range _CamelNameToValueMap {
+		if strings.EqualFold(s, k) {
+			return v, nil
+		}
+	}
+	i, err := strconv.Atoi(s)
+	if err == nil {
+		for _, v := range _CamelNameToValueMap {
+			if int(v) == i {
+				return v, nil
+			}
+		}
+	}
+	return 0, fmt.Errorf("%s does not belong to Camel values", s)
+}
+
+// CamelValues returns all values of the enum
+func CamelValues() []Camel {
+	return _CamelValues
+}
+
+// IsACamel returns "true" if the value is listed in the enum definition. "false" otherwise
+func (i Camel) IsACamel() bool {
+	for _, v := range _CamelValues {
+		if i == v {
+			return true
+		}
+	}
+	return false
+}
+
+// MarshalJSON implements the json.Marshaler interface for Camel
+func (i Camel) MarshalJSON() ([]byte, error) {
+	return json.Marshal(i.String())
+}
+
+// UnmarshalJSON implements the json.Unmarshaler interface for Camel
+func (i *Camel) UnmarshalJSON(data []byte) error {
+	var s string
+	var err error
+	if err = json.Unmarshal(data, &s); err != nil {
+		var val int
+		if err = json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("Camel should be a string, got %s", data)
+		}
+		*i = Camel(val)
+		if !i.IsACamel() {
+			return fmt.Errorf("Invalid value for Camel (%d)", val)
+		}
+		return nil
+	}
+
+	*i, err = CamelString(s)
+	return err
+}
+`
+
+const camelSnakeOut = `
+const _CamelName = "enum_firstenum_secondenum_thirdenum_fourthenum_fifthenum_sixthenum_seventh"
+
+var _CamelIndex = [...]uint8{0, 10, 21, 31, 42, 52, 62, 74}
+
+func (i Camel) String() string {
+	if i < 0 || i >= Camel(len(_CamelIndex)-1) {
+		return fmt.Sprintf("Camel(%d)", i)
+	}
+	return _CamelName[_CamelIndex[i]:_CamelIndex[i+1]]
+}
+
+var _CamelValues = []Camel{0, 1, 2, 3, 4, 5, 6}
+
+var _CamelNameToValueMap = map[string]Camel{
+	_CamelName[0:10]:  0,
+	_CamelName[10:21]: 1,
+	_CamelName[21:31]: 2,
+	_CamelName[31:42]: 3,
+	_CamelName[42:52]: 4,
+	_CamelName[52:62]: 5,
+	_CamelName[62:74]: 6,
+}
+
+// CamelString retrieves an enum value from the enum constants string name.
+// Throws an error if the param is not part of the enum.
+func CamelString(s string) (Camel, error) {
+	if val, ok := _CamelNameToValueMap[s]; ok {
+		return val, nil
+	}
+	return 0, fmt.Errorf("%s does not belong to Camel values", s)
+}
+
+// CamelValues returns all values of the enum
+func CamelValues() []Camel {
+	return _CamelValues
+}
+
+// IsACamel returns "true" if the value is listed in the enum definition. "false" otherwise
+func (i Camel) IsACamel() bool {
+	for _, v := range _CamelValues {
+		if i == v {
+			return true
+		}
+	}
+	return false
+}
+`
+
+const camelString = "EnumFirstEnumSecondEnumThirdEnumFourthEnumFifthEnumSixthEnumSeventh"
+const camelJSON = "enumFirstenumSecondenumThirdenumFourthenumFifthenumSixthenumSeventh"
+const camelSnake = "enum_firstenum_secondenum_thirdenum_fourthenum_fifthenum_sixthenum_seventh"
+const camelKebab = "enum-firstenum-secondenum-thirdenum-fourthenum-fifthenum-sixthenum-seventh"
 
 // Enumeration with an offset.
 // Also includes a duplicate.
@@ -562,11 +928,11 @@ func (i Prime) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON implements the json.Unmarshaler interface for Prime
 func (i *Prime) UnmarshalJSON(data []byte) error {
 	var s string
-	if err := json.Unmarshal(data, &s); err != nil {
+	var err error
+	if err = json.Unmarshal(data, &s); err != nil {
 		return fmt.Errorf("Prime should be a string, got %s", data)
 	}
 
-	var err error
 	*i, err = PrimeString(s)
 	return err
 }
@@ -972,11 +1338,11 @@ func (i Prime) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON implements the json.Unmarshaler interface for Prime
 func (i *Prime) UnmarshalJSON(data []byte) error {
 	var s string
-	if err := json.Unmarshal(data, &s); err != nil {
+	var err error
+	if err = json.Unmarshal(data, &s); err != nil {
 		return fmt.Errorf("Prime should be a string, got %s", data)
 	}
 
-	var err error
 	*i, err = PrimeString(s)
 	return err
 }
@@ -1024,29 +1390,11 @@ const (
 
 func TestGolden(t *testing.T) {
 	for _, test := range golden {
-		runGoldenTest(t, test, false, false, false, false, "")
-	}
-	for _, test := range goldenJSON {
-		runGoldenTest(t, test, true, false, false, false, "")
-	}
-	for _, test := range goldenText {
-		runGoldenTest(t, test, false, false, false, true, "")
-	}
-	for _, test := range goldenYAML {
-		runGoldenTest(t, test, false, true, false, false, "")
-	}
-	for _, test := range goldenSQL {
-		runGoldenTest(t, test, false, false, true, false, "")
-	}
-	for _, test := range goldenJSONAndSQL {
-		runGoldenTest(t, test, true, false, true, false, "")
-	}
-	for _, test := range goldenPrefix {
-		runGoldenTest(t, test, false, false, false, false, "Day")
+		runGoldenTest(t, test)
 	}
 }
 
-func runGoldenTest(t *testing.T, test Golden, generateJSON, generateYAML, generateSQL, generateText bool, prefix string) {
+func runGoldenTest(t *testing.T, test Golden) {
 	var g Generator
 	input := "package test\n" + test.input
 	file := test.name + ".go"
@@ -1056,7 +1404,7 @@ func runGoldenTest(t *testing.T, test Golden, generateJSON, generateYAML, genera
 	if len(tokens) != 3 {
 		t.Fatalf("%s: need type declaration on first line", test.name)
 	}
-	g.generate(tokens[1], generateJSON, generateYAML, generateSQL, generateText, "noop", prefix)
+	g.generate(tokens[1], test.flags, test.options)
 	got := string(g.format())
 	if got != test.output {
 		t.Errorf("%s: got\n====\n%s====\nexpected\n====%s", test.name, got, test.output)

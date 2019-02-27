@@ -112,8 +112,6 @@ name := MyTypeValue.String() // name => "MyTypeValue"
 
 Sometimes you need to use some other string representation format than CamelCase (i.e. in JSON).
 
-To transform it from CamelCase to snake_case or kebab-case, you can use the `transform` flag.
-
 For example, the command `enumer -type=MyType -json -transform=snake` would generate the following string representation:
 
 ```go
@@ -128,13 +126,42 @@ for more information.
 There are four boolean flags: `json`, `text`, `yaml` and `sql`. You can use any combination of them (i.e. `enumer -type=Pill -json -text`),
 
 
-For enum string representation transformation the `transform` and `trimprefix` flags
+To transform the enum string representation the `transform` and `trimprefix` flags
 were added (i.e. `enumer -type=MyType -json -transform=snake`).
-Possible transform values are `snake` and `kebab` for transformation to snake_case and kebab-case accordingly.
+The possible transform values are:
+
+- lower - mytypevalue
+
+- upper - MYTYPEVALUE
+
+- json - myTypeValue
+
+- snake - my_type_value
+
+- snakeu - MY_TYPE_VALUE
+
+- kebab - my-type-value
+
+- kebabu - MY-TYPE-VALUE
+
 The default value for `transform` flag is `noop` which means no transformation will be performed.
 
 If a prefix is provided via the `trimprefix` flag, it will be trimmed from the start of each name (before
 it is transformed). If a name doesn't have the prefix it will be passed unchanged.
+
+The -ignorecase and -numeric flags allow more permissive conversions from a string to an
+enum value:
+
+- ignorecase
+
+  Ignores the case of the input string. This won't work if any of your enum names differ
+  only by case.
+
+- numeric
+
+  In addition to converting from a name string, the conversion will also handle an input string
+  that is a number matching the enum value. So the string "4" would translate to the enum that
+  has the value 4.
 
 ## Inspiring projects
 * [Stringer](https://godoc.org/golang.org/x/tools/cmd/stringer)

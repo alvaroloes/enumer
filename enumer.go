@@ -4,15 +4,69 @@ import "fmt"
 
 // Arguments to format are:
 //	[1]: type name
+//	[2]: numeric value check code (or "")
 const stringNameToValueMethod = `// %[1]sString retrieves an enum value from the enum constants string name.
 // Throws an error if the param is not part of the enum.
 func %[1]sString(s string) (%[1]s, error) {
 	if val, ok := _%[1]sNameToValueMap[s]; ok {
 		return val, nil
-	}
+	}%[2]s
 	return 0, fmt.Errorf("%%s does not belong to %[1]s values", s)
 }
 `
+const stringIgnoreCaseNameToValueMethod = `// %[1]sString retrieves an enum value from the enum constants string name.
+// Throws an error if the param is not part of the enum.
+func %[1]sString(s string) (%[1]s, error) {
+	if val, ok := _%[1]sNameToValueMap[s]; ok {
+		return val, nil
+	}
+	for k, v := range _%[1]sNameToValueMap {
+		if strings.EqualFold(s, k) {
+			return v, nil
+		}
+	}%[2]s
+	return 0, fmt.Errorf("%%s does not belong to %[1]s values", s)
+}
+`
+const stringUpperNameToValueMethod = `// %[1]sString retrieves an enum value from the enum constants string name.
+// Throws an error if the param is not part of the enum.
+func %[1]sString(s string) (%[1]s, error) {
+	if val, ok := _%[1]sNameToValueMap[strings.ToUpper(s)]; ok {
+		return val, nil
+	}%[2]s
+	return 0, fmt.Errorf("%%s does not belong to %[1]s values", s)
+}
+`
+const stringLowerNameToValueMethod = `// %[1]sString retrieves an enum value from the enum constants string name.
+// Throws an error if the param is not part of the enum.
+func %[1]sString(s string) (%[1]s, error) {
+	if val, ok := _%[1]sNameToValueMap[strings.ToLower(s)]; ok {
+		return val, nil
+	}%[2]s
+	return 0, fmt.Errorf("%%s does not belong to %[1]s values", s)
+}
+`
+
+// Arguments to format are:
+//      [1]: type name
+const stringNumericCheck = `
+        i, err := strconv.Atoi(s)
+        if err == nil {
+                for _, v := range _%[1]sNameToValueMap {
+                        if int(v) == i {
+                                return v, nil
+                        }
+                }
+        }`
+
+type CaseMatch int
+
+const (
+	CaseNone = iota
+	CaseLower
+	CaseUpper
+	CaseMixed
+)
 
 // Arguments to format are:
 //	[1]: type name
@@ -44,7 +98,7 @@ func (i %[1]s) IsA%[1]s() bool {
 }
 `
 
-func (g *Generator) buildBasicExtras(runs [][]Value, typeName string, runsThreshold int) {
+func (g *Generator) buildBasicExtras(runs [][]Value, typeName string, runsThreshold int, ignoreCase CaseMatch, numeric bool) {
 	// At this moment, either "g.declareIndexAndNameVars()" or "g.declareNameVars()" has been called
 
 	// Print the slice of values
@@ -77,7 +131,21 @@ func (g *Generator) buildBasicExtras(runs [][]Value, typeName string, runsThresh
 	g.Printf("}\n\n")
 
 	// Print the basic extra methods
-	g.Printf(stringNameToValueMethod, typeName)
+	numCheck := ""
+	if numeric {
+		numCheck = fmt.Sprintf(stringNumericCheck, typeName)
+	}
+	switch ignoreCase {
+	case CaseLower:
+		g.Printf(stringLowerNameToValueMethod, typeName, numCheck)
+	case CaseUpper:
+		g.Printf(stringUpperNameToValueMethod, typeName, numCheck)
+	case CaseMixed:
+		g.Printf(stringIgnoreCaseNameToValueMethod, typeName, numCheck)
+	default:
+		g.Printf(stringNameToValueMethod, typeName, numCheck)
+	}
+
 	g.Printf(stringValuesMethod, typeName)
 	if len(runs) < runsThreshold {
 		g.Printf(stringBelongsMethodLoop, typeName)
@@ -97,18 +165,38 @@ func (i %[1]s) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON implements the json.Unmarshaler interface for %[1]s
 func (i *%[1]s) UnmarshalJSON(data []byte) error {
 	var s string
-	if err := json.Unmarshal(data, &s); err != nil {
-		return fmt.Errorf("%[1]s should be a string, got %%s", data)
-	}
-
 	var err error
+	if err = json.Unmarshal(data, &s); err != nil {%[2]s	}
+
 	*i, err = %[1]sString(s)
 	return err
 }
 `
 
-func (g *Generator) buildJSONMethods(runs [][]Value, typeName string, runsThreshold int) {
-	g.Printf(jsonMethods, typeName)
+const jsonNumericCheck = `
+                var val int
+                if err = json.Unmarshal(data, &val); err != nil {
+                        return fmt.Errorf("%[1]s should be a string, got %%s", data)
+                }
+                *i = %[1]s(val)
+                if !i.IsA%[1]s() {
+                        return fmt.Errorf("Invalid value for %[1]s (%%d)", val)
+                }
+                return nil
+`
+
+const jsonNoNumericCheck = `
+                return fmt.Errorf("%[1]s should be a string, got %%s", data)
+`
+
+func (g *Generator) buildJSONMethods(runs [][]Value, typeName string, runsThreshold int, numeric bool) {
+	var numCheck string
+	if numeric {
+		numCheck = fmt.Sprintf(jsonNumericCheck, typeName)
+	} else {
+		numCheck = fmt.Sprintf(jsonNoNumericCheck, typeName)
+	}
+	g.Printf(jsonMethods, typeName, numCheck)
 }
 
 // Arguments to format are:
