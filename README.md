@@ -136,9 +136,10 @@ name := MyTypeValue.String() // name => "my_type_value"
 - snake-upper
 - kebab
 - kebab-upper
-- lower (Lowercase)
-- upper (Uppercase)
+- lower (lowercase)
+- upper (UPPERCASE)
 - title (TitleCase)
+- title-lower (titleCase)
 - first (Use first character of string)
 - first-lower (same as first only lower case)
 - first-upper (same as first only upper case)

@@ -27,6 +27,7 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"unicode"
 	"unicode/utf8"
 
 	"github.com/pascaldekloe/name"
@@ -271,6 +272,12 @@ func (g *Generator) transformValueNames(values []Value, transformMethod string) 
 	case "title":
 		fn = func(s string) string {
 			return strings.Title(s)
+		}
+	case "title-lower":
+		fn = func(s string) string {
+			title := []rune(strings.Title(s))
+			title[0] = unicode.ToLower(title[0])
+			return string(title)
 		}
 	case "first":
 		fn = func(s string) string {
