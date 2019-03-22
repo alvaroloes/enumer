@@ -330,9 +330,9 @@ func (g *Generator) generate(typeName string, includeJSON, includeYAML, includeS
 
 	g.trimValueNames(values, trimPrefix)
 
-	g.prefixValueNames(values, addPrefix)
-
 	g.transformValueNames(values, transformMethod)
+
+	g.prefixValueNames(values, addPrefix)
 
 	runs := splitIntoRuns(values)
 	// The decision of which pattern to use depends on the number of
