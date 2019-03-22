@@ -50,11 +50,15 @@ var goldenJSONAndSQL = []Golden{
 }
 
 var goldenTrimPrefix = []Golden{
-	{"trimprefix", trimPrefixIn, dayOut},
+	{"trim prefix", trimPrefixIn, dayOut},
 }
 
 var goldenWithPrefix = []Golden{
-	{"withprefix", dayIn, prefixedDayOut},
+	{"with prefix", dayIn, prefixedDayOut},
+}
+
+var goldenTrimAndAddPrefix = []Golden{
+	{"trim and add prefix", trimPrefixIn, trimmedPrefixedDayOut},
 }
 
 // Each example starts with "type XXX [u]int", with a single space separating them.
@@ -143,6 +147,55 @@ var _DayNameToValueMap = map[string]Day{
 	_DayName[42:51]: 4,
 	_DayName[51:62]: 5,
 	_DayName[62:71]: 6,
+}
+
+// DayString retrieves an enum value from the enum constants string name.
+// Throws an error if the param is not part of the enum.
+func DayString(s string) (Day, error) {
+	if val, ok := _DayNameToValueMap[s]; ok {
+		return val, nil
+	}
+	return 0, fmt.Errorf("%s does not belong to Day values", s)
+}
+
+// DayValues returns all values of the enum
+func DayValues() []Day {
+	return _DayValues
+}
+
+// IsADay returns "true" if the value is listed in the enum definition. "false" otherwise
+func (i Day) IsADay() bool {
+	for _, v := range _DayValues {
+		if i == v {
+			return true
+		}
+	}
+	return false
+}
+`
+
+const trimmedPrefixedDayOut = `
+const _DayName = "NightMondayNightTuesdayNightWednesdayNightThursdayNightFridayNightSaturdayNightSunday"
+
+var _DayIndex = [...]uint8{0, 11, 23, 37, 50, 61, 74, 85}
+
+func (i Day) String() string {
+	if i < 0 || i >= Day(len(_DayIndex)-1) {
+		return fmt.Sprintf("Day(%d)", i)
+	}
+	return _DayName[_DayIndex[i]:_DayIndex[i+1]]
+}
+
+var _DayValues = []Day{0, 1, 2, 3, 4, 5, 6}
+
+var _DayNameToValueMap = map[string]Day{
+	_DayName[0:11]:  0,
+	_DayName[11:23]: 1,
+	_DayName[23:37]: 2,
+	_DayName[37:50]: 3,
+	_DayName[50:61]: 4,
+	_DayName[61:74]: 5,
+	_DayName[74:85]: 6,
 }
 
 // DayString retrieves an enum value from the enum constants string name.
@@ -1099,6 +1152,9 @@ func TestGolden(t *testing.T) {
 	}
 	for _, test := range goldenWithPrefix {
 		runGoldenTest(t, test, false, false, false, false, "", "Day")
+	}
+	for _, test := range goldenTrimAndAddPrefix {
+		runGoldenTest(t, test, false, false, false, false, "Day", "Night")
 	}
 }
 
