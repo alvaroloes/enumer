@@ -158,6 +158,9 @@ The default value for `transform` flag is `noop` which means no transformation w
 If a prefix is provided via the `trimprefix` flag, it will be trimmed from the start of each name (before
 it is transformed). If a name doesn't have the prefix it will be passed unchanged.
 
+If a prefix is provided via the `addprefix` flag, it will be added to the start of each name (before
+it is transformed and after trimming).
+
 ## Inspiring projects
 
 - [Stringer](https://godoc.org/golang.org/x/tools/cmd/stringer)
