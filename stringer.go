@@ -366,6 +366,10 @@ func (g *Generator) transformValueNames(values []Value, transformMethod string) 
 			r, _ := utf8.DecodeRuneInString(s)
 			return strings.ToLower(string(r))
 		}
+	case "whitespace":
+		fn = func(s string) string {
+			return strings.ToLower(name.Delimit(s, ' '))
+		}
 	default:
 		return
 	}
