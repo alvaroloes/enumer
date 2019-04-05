@@ -52,8 +52,16 @@ var goldenJSONAndSQL = []Golden{
 	{"prime", primeJsonAndSqlIn, primeJsonAndSqlOut},
 }
 
-var goldenPrefix = []Golden{
-	{"prefix", prefixIn, dayOut},
+var goldenTrimPrefix = []Golden{
+	{"trim prefix", trimPrefixIn, dayOut},
+}
+
+var goldenWithPrefix = []Golden{
+	{"with prefix", dayIn, prefixedDayOut},
+}
+
+var goldenTrimAndAddPrefix = []Golden{
+	{"trim and add prefix", trimPrefixIn, trimmedPrefixedDayOut},
 }
 
 // Each example starts with "type XXX [u]int", with a single space separating them.
@@ -95,6 +103,16 @@ var _DayNameToValueMap = map[string]Day{
 	_DayName[44:50]: 6,
 }
 
+var _DayNames = []string{
+	_DayName[0:6],
+	_DayName[6:13],
+	_DayName[13:22],
+	_DayName[22:30],
+	_DayName[30:36],
+	_DayName[36:44],
+	_DayName[44:50],
+}
+
 // DayString retrieves an enum value from the enum constants string name.
 // Throws an error if the param is not part of the enum.
 func DayString(s string) (Day, error) {
@@ -107,6 +125,145 @@ func DayString(s string) (Day, error) {
 // DayValues returns all values of the enum
 func DayValues() []Day {
 	return _DayValues
+}
+
+// DayStrings returns a slice of all String values of the enum
+func DayStrings() []string {
+	strs := make([]string, len(_DayNames))
+	copy(strs, _DayNames)
+	return strs
+}
+
+// IsADay returns "true" if the value is listed in the enum definition. "false" otherwise
+func (i Day) IsADay() bool {
+	for _, v := range _DayValues {
+		if i == v {
+			return true
+		}
+	}
+	return false
+}
+`
+
+const prefixedDayOut = `
+const _DayName = "DayMondayDayTuesdayDayWednesdayDayThursdayDayFridayDaySaturdayDaySunday"
+
+var _DayIndex = [...]uint8{0, 9, 19, 31, 42, 51, 62, 71}
+
+func (i Day) String() string {
+	if i < 0 || i >= Day(len(_DayIndex)-1) {
+		return fmt.Sprintf("Day(%d)", i)
+	}
+	return _DayName[_DayIndex[i]:_DayIndex[i+1]]
+}
+
+var _DayValues = []Day{0, 1, 2, 3, 4, 5, 6}
+
+var _DayNameToValueMap = map[string]Day{
+	_DayName[0:9]:   0,
+	_DayName[9:19]:  1,
+	_DayName[19:31]: 2,
+	_DayName[31:42]: 3,
+	_DayName[42:51]: 4,
+	_DayName[51:62]: 5,
+	_DayName[62:71]: 6,
+}
+
+var _DayNames = []string{
+	_DayName[0:9],
+	_DayName[9:19],
+	_DayName[19:31],
+	_DayName[31:42],
+	_DayName[42:51],
+	_DayName[51:62],
+	_DayName[62:71],
+}
+
+// DayString retrieves an enum value from the enum constants string name.
+// Throws an error if the param is not part of the enum.
+func DayString(s string) (Day, error) {
+	if val, ok := _DayNameToValueMap[s]; ok {
+		return val, nil
+	}
+	return 0, fmt.Errorf("%s does not belong to Day values", s)
+}
+
+// DayValues returns all values of the enum
+func DayValues() []Day {
+	return _DayValues
+}
+
+// DayStrings returns a slice of all String values of the enum
+func DayStrings() []string {
+	strs := make([]string, len(_DayNames))
+	copy(strs, _DayNames)
+	return strs
+}
+
+// IsADay returns "true" if the value is listed in the enum definition. "false" otherwise
+func (i Day) IsADay() bool {
+	for _, v := range _DayValues {
+		if i == v {
+			return true
+		}
+	}
+	return false
+}
+`
+
+const trimmedPrefixedDayOut = `
+const _DayName = "NightMondayNightTuesdayNightWednesdayNightThursdayNightFridayNightSaturdayNightSunday"
+
+var _DayIndex = [...]uint8{0, 11, 23, 37, 50, 61, 74, 85}
+
+func (i Day) String() string {
+	if i < 0 || i >= Day(len(_DayIndex)-1) {
+		return fmt.Sprintf("Day(%d)", i)
+	}
+	return _DayName[_DayIndex[i]:_DayIndex[i+1]]
+}
+
+var _DayValues = []Day{0, 1, 2, 3, 4, 5, 6}
+
+var _DayNameToValueMap = map[string]Day{
+	_DayName[0:11]:  0,
+	_DayName[11:23]: 1,
+	_DayName[23:37]: 2,
+	_DayName[37:50]: 3,
+	_DayName[50:61]: 4,
+	_DayName[61:74]: 5,
+	_DayName[74:85]: 6,
+}
+
+var _DayNames = []string{
+	_DayName[0:11],
+	_DayName[11:23],
+	_DayName[23:37],
+	_DayName[37:50],
+	_DayName[50:61],
+	_DayName[61:74],
+	_DayName[74:85],
+}
+
+// DayString retrieves an enum value from the enum constants string name.
+// Throws an error if the param is not part of the enum.
+func DayString(s string) (Day, error) {
+	if val, ok := _DayNameToValueMap[s]; ok {
+		return val, nil
+	}
+	return 0, fmt.Errorf("%s does not belong to Day values", s)
+}
+
+// DayValues returns all values of the enum
+func DayValues() []Day {
+	return _DayValues
+}
+
+// DayStrings returns a slice of all String values of the enum
+func DayStrings() []string {
+	strs := make([]string, len(_DayNames))
+	copy(strs, _DayNames)
+	return strs
 }
 
 // IsADay returns "true" if the value is listed in the enum definition. "false" otherwise
@@ -153,6 +310,12 @@ var _NumberNameToValueMap = map[string]Number{
 	_NumberName[6:11]: 3,
 }
 
+var _NumberNames = []string{
+	_NumberName[0:3],
+	_NumberName[3:6],
+	_NumberName[6:11],
+}
+
 // NumberString retrieves an enum value from the enum constants string name.
 // Throws an error if the param is not part of the enum.
 func NumberString(s string) (Number, error) {
@@ -165,6 +328,13 @@ func NumberString(s string) (Number, error) {
 // NumberValues returns all values of the enum
 func NumberValues() []Number {
 	return _NumberValues
+}
+
+// NumberStrings returns a slice of all String values of the enum
+func NumberStrings() []string {
+	strs := make([]string, len(_NumberNames))
+	copy(strs, _NumberNames)
+	return strs
 }
 
 // IsANumber returns "true" if the value is listed in the enum definition. "false" otherwise
@@ -233,6 +403,17 @@ var _GapNameToValueMap = map[string]Gap{
 	_GapName_2[0:6]:   11,
 }
 
+var _GapNames = []string{
+	_GapName_0[0:3],
+	_GapName_0[3:8],
+	_GapName_1[0:4],
+	_GapName_1[4:7],
+	_GapName_1[7:12],
+	_GapName_1[12:17],
+	_GapName_1[17:21],
+	_GapName_2[0:6],
+}
+
 // GapString retrieves an enum value from the enum constants string name.
 // Throws an error if the param is not part of the enum.
 func GapString(s string) (Gap, error) {
@@ -245,6 +426,13 @@ func GapString(s string) (Gap, error) {
 // GapValues returns all values of the enum
 func GapValues() []Gap {
 	return _GapValues
+}
+
+// GapStrings returns a slice of all String values of the enum
+func GapStrings() []string {
+	strs := make([]string, len(_GapNames))
+	copy(strs, _GapNames)
+	return strs
 }
 
 // IsAGap returns "true" if the value is listed in the enum definition. "false" otherwise
@@ -292,6 +480,14 @@ var _NumNameToValueMap = map[string]Num{
 	_NumName[10:12]: 2,
 }
 
+var _NumNames = []string{
+	_NumName[0:3],
+	_NumName[3:6],
+	_NumName[6:8],
+	_NumName[8:10],
+	_NumName[10:12],
+}
+
 // NumString retrieves an enum value from the enum constants string name.
 // Throws an error if the param is not part of the enum.
 func NumString(s string) (Num, error) {
@@ -304,6 +500,13 @@ func NumString(s string) (Num, error) {
 // NumValues returns all values of the enum
 func NumValues() []Num {
 	return _NumValues
+}
+
+// NumStrings returns a slice of all String values of the enum
+func NumStrings() []string {
+	strs := make([]string, len(_NumNames))
+	copy(strs, _NumNames)
+	return strs
 }
 
 // IsANum returns "true" if the value is listed in the enum definition. "false" otherwise
@@ -364,6 +567,14 @@ var _UnumNameToValueMap = map[string]Unum{
 	_UnumName_1[3:6]: 254,
 }
 
+var _UnumNames = []string{
+	_UnumName_0[0:2],
+	_UnumName_0[2:4],
+	_UnumName_0[4:6],
+	_UnumName_1[0:3],
+	_UnumName_1[3:6],
+}
+
 // UnumString retrieves an enum value from the enum constants string name.
 // Throws an error if the param is not part of the enum.
 func UnumString(s string) (Unum, error) {
@@ -376,6 +587,13 @@ func UnumString(s string) (Unum, error) {
 // UnumValues returns all values of the enum
 func UnumValues() []Unum {
 	return _UnumValues
+}
+
+// UnumStrings returns a slice of all String values of the enum
+func UnumStrings() []string {
+	strs := make([]string, len(_UnumNames))
+	copy(strs, _UnumNames)
+	return strs
 }
 
 // IsAUnum returns "true" if the value is listed in the enum definition. "false" otherwise
@@ -454,6 +672,22 @@ var _PrimeNameToValueMap = map[string]Prime{
 	_PrimeName[32:35]: 43,
 }
 
+var _PrimeNames = []string{
+	_PrimeName[0:2],
+	_PrimeName[2:4],
+	_PrimeName[4:6],
+	_PrimeName[6:8],
+	_PrimeName[8:11],
+	_PrimeName[11:14],
+	_PrimeName[14:17],
+	_PrimeName[17:20],
+	_PrimeName[20:23],
+	_PrimeName[23:26],
+	_PrimeName[26:29],
+	_PrimeName[29:32],
+	_PrimeName[32:35],
+}
+
 // PrimeString retrieves an enum value from the enum constants string name.
 // Throws an error if the param is not part of the enum.
 func PrimeString(s string) (Prime, error) {
@@ -466,6 +700,13 @@ func PrimeString(s string) (Prime, error) {
 // PrimeValues returns all values of the enum
 func PrimeValues() []Prime {
 	return _PrimeValues
+}
+
+// PrimeStrings returns a slice of all String values of the enum
+func PrimeStrings() []string {
+	strs := make([]string, len(_PrimeNames))
+	copy(strs, _PrimeNames)
+	return strs
 }
 
 // IsAPrime returns "true" if the value is listed in the enum definition. "false" otherwise
@@ -537,6 +778,22 @@ var _PrimeNameToValueMap = map[string]Prime{
 	_PrimeName[32:35]: 43,
 }
 
+var _PrimeNames = []string{
+	_PrimeName[0:2],
+	_PrimeName[2:4],
+	_PrimeName[4:6],
+	_PrimeName[6:8],
+	_PrimeName[8:11],
+	_PrimeName[11:14],
+	_PrimeName[14:17],
+	_PrimeName[17:20],
+	_PrimeName[20:23],
+	_PrimeName[23:26],
+	_PrimeName[26:29],
+	_PrimeName[29:32],
+	_PrimeName[32:35],
+}
+
 // PrimeString retrieves an enum value from the enum constants string name.
 // Throws an error if the param is not part of the enum.
 func PrimeString(s string) (Prime, error) {
@@ -549,6 +806,13 @@ func PrimeString(s string) (Prime, error) {
 // PrimeValues returns all values of the enum
 func PrimeValues() []Prime {
 	return _PrimeValues
+}
+
+// PrimeStrings returns a slice of all String values of the enum
+func PrimeStrings() []string {
+	strs := make([]string, len(_PrimeNames))
+	copy(strs, _PrimeNames)
+	return strs
 }
 
 // IsAPrime returns "true" if the value is listed in the enum definition. "false" otherwise
@@ -638,6 +902,22 @@ var _PrimeNameToValueMap = map[string]Prime{
 	_PrimeName[32:35]: 43,
 }
 
+var _PrimeNames = []string{
+	_PrimeName[0:2],
+	_PrimeName[2:4],
+	_PrimeName[4:6],
+	_PrimeName[6:8],
+	_PrimeName[8:11],
+	_PrimeName[11:14],
+	_PrimeName[14:17],
+	_PrimeName[17:20],
+	_PrimeName[20:23],
+	_PrimeName[23:26],
+	_PrimeName[26:29],
+	_PrimeName[29:32],
+	_PrimeName[32:35],
+}
+
 // PrimeString retrieves an enum value from the enum constants string name.
 // Throws an error if the param is not part of the enum.
 func PrimeString(s string) (Prime, error) {
@@ -650,6 +930,13 @@ func PrimeString(s string) (Prime, error) {
 // PrimeValues returns all values of the enum
 func PrimeValues() []Prime {
 	return _PrimeValues
+}
+
+// PrimeStrings returns a slice of all String values of the enum
+func PrimeStrings() []string {
+	strs := make([]string, len(_PrimeNames))
+	copy(strs, _PrimeNames)
+	return strs
 }
 
 // IsAPrime returns "true" if the value is listed in the enum definition. "false" otherwise
@@ -734,6 +1021,22 @@ var _PrimeNameToValueMap = map[string]Prime{
 	_PrimeName[32:35]: 43,
 }
 
+var _PrimeNames = []string{
+	_PrimeName[0:2],
+	_PrimeName[2:4],
+	_PrimeName[4:6],
+	_PrimeName[6:8],
+	_PrimeName[8:11],
+	_PrimeName[11:14],
+	_PrimeName[14:17],
+	_PrimeName[17:20],
+	_PrimeName[20:23],
+	_PrimeName[23:26],
+	_PrimeName[26:29],
+	_PrimeName[29:32],
+	_PrimeName[32:35],
+}
+
 // PrimeString retrieves an enum value from the enum constants string name.
 // Throws an error if the param is not part of the enum.
 func PrimeString(s string) (Prime, error) {
@@ -746,6 +1049,13 @@ func PrimeString(s string) (Prime, error) {
 // PrimeValues returns all values of the enum
 func PrimeValues() []Prime {
 	return _PrimeValues
+}
+
+// PrimeStrings returns a slice of all String values of the enum
+func PrimeStrings() []string {
+	strs := make([]string, len(_PrimeNames))
+	copy(strs, _PrimeNames)
+	return strs
 }
 
 // IsAPrime returns "true" if the value is listed in the enum definition. "false" otherwise
@@ -835,6 +1145,22 @@ var _PrimeNameToValueMap = map[string]Prime{
 	_PrimeName[32:35]: 43,
 }
 
+var _PrimeNames = []string{
+	_PrimeName[0:2],
+	_PrimeName[2:4],
+	_PrimeName[4:6],
+	_PrimeName[6:8],
+	_PrimeName[8:11],
+	_PrimeName[11:14],
+	_PrimeName[14:17],
+	_PrimeName[17:20],
+	_PrimeName[20:23],
+	_PrimeName[23:26],
+	_PrimeName[26:29],
+	_PrimeName[29:32],
+	_PrimeName[32:35],
+}
+
 // PrimeString retrieves an enum value from the enum constants string name.
 // Throws an error if the param is not part of the enum.
 func PrimeString(s string) (Prime, error) {
@@ -847,6 +1173,13 @@ func PrimeString(s string) (Prime, error) {
 // PrimeValues returns all values of the enum
 func PrimeValues() []Prime {
 	return _PrimeValues
+}
+
+// PrimeStrings returns a slice of all String values of the enum
+func PrimeStrings() []string {
+	strs := make([]string, len(_PrimeNames))
+	copy(strs, _PrimeNames)
+	return strs
 }
 
 // IsAPrime returns "true" if the value is listed in the enum definition. "false" otherwise
@@ -947,6 +1280,22 @@ var _PrimeNameToValueMap = map[string]Prime{
 	_PrimeName[32:35]: 43,
 }
 
+var _PrimeNames = []string{
+	_PrimeName[0:2],
+	_PrimeName[2:4],
+	_PrimeName[4:6],
+	_PrimeName[6:8],
+	_PrimeName[8:11],
+	_PrimeName[11:14],
+	_PrimeName[14:17],
+	_PrimeName[17:20],
+	_PrimeName[20:23],
+	_PrimeName[23:26],
+	_PrimeName[26:29],
+	_PrimeName[29:32],
+	_PrimeName[32:35],
+}
+
 // PrimeString retrieves an enum value from the enum constants string name.
 // Throws an error if the param is not part of the enum.
 func PrimeString(s string) (Prime, error) {
@@ -959,6 +1308,13 @@ func PrimeString(s string) (Prime, error) {
 // PrimeValues returns all values of the enum
 func PrimeValues() []Prime {
 	return _PrimeValues
+}
+
+// PrimeStrings returns a slice of all String values of the enum
+func PrimeStrings() []string {
+	strs := make([]string, len(_PrimeNames))
+	copy(strs, _PrimeNames)
+	return strs
 }
 
 // IsAPrime returns "true" if the value is listed in the enum definition. "false" otherwise
@@ -1013,7 +1369,7 @@ func (i *Prime) Scan(value interface{}) error {
 }
 `
 
-const prefixIn = `type Day int
+const trimPrefixIn = `type Day int
 const (
 	DayMonday Day = iota
 	DayTuesday
@@ -1027,29 +1383,35 @@ const (
 
 func TestGolden(t *testing.T) {
 	for _, test := range golden {
-		runGoldenTest(t, test, false, false, false, false, "")
+		runGoldenTest(t, test, false, false, false, false, "", "")
 	}
 	for _, test := range goldenJSON {
-		runGoldenTest(t, test, true, false, false, false, "")
+		runGoldenTest(t, test, true, false, false, false, "", "")
 	}
 	for _, test := range goldenText {
-		runGoldenTest(t, test, false, false, false, true, "")
+		runGoldenTest(t, test, false, false, false, true, "", "")
 	}
 	for _, test := range goldenYAML {
-		runGoldenTest(t, test, false, true, false, false, "")
+		runGoldenTest(t, test, false, true, false, false, "", "")
 	}
 	for _, test := range goldenSQL {
-		runGoldenTest(t, test, false, false, true, false, "")
+		runGoldenTest(t, test, false, false, true, false, "", "")
 	}
 	for _, test := range goldenJSONAndSQL {
-		runGoldenTest(t, test, true, false, true, false, "")
+		runGoldenTest(t, test, true, false, true, false, "", "")
 	}
-	for _, test := range goldenPrefix {
-		runGoldenTest(t, test, false, false, false, false, "Day")
+	for _, test := range goldenTrimPrefix {
+		runGoldenTest(t, test, false, false, false, false, "Day", "")
+	}
+	for _, test := range goldenWithPrefix {
+		runGoldenTest(t, test, false, false, false, false, "", "Day")
+	}
+	for _, test := range goldenTrimAndAddPrefix {
+		runGoldenTest(t, test, false, false, false, false, "Day", "Night")
 	}
 }
 
-func runGoldenTest(t *testing.T, test Golden, generateJSON, generateYAML, generateSQL, generateText bool, prefix string) {
+func runGoldenTest(t *testing.T, test Golden, generateJSON, generateYAML, generateSQL, generateText bool, trimPrefix string, prefix string) {
 	var g Generator
 	file := test.name + ".go"
 	input := "package test\n" + test.input
@@ -1076,9 +1438,14 @@ func runGoldenTest(t *testing.T, test Golden, generateJSON, generateYAML, genera
 	if len(tokens) != 3 {
 		t.Fatalf("%s: need type declaration on first line", test.name)
 	}
-	g.generate(tokens[1], generateJSON, generateYAML, generateSQL, generateText, "noop", prefix)
+	g.generate(tokens[1], generateJSON, generateYAML, generateSQL, generateText, "noop", trimPrefix, prefix)
 	got := string(g.format())
 	if got != test.output {
+		// dmp := diffmatchpatch.New()
+
+		// diffs := dmp.DiffMain(got, test.output, false)
+
+		// t.Errorf(dmp.DiffPrettyText(diffs))
 		t.Errorf("%s: got\n====\n%s====\nexpected\n====%s", test.name, got, test.output)
 	}
 }

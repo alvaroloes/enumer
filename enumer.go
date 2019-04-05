@@ -24,6 +24,16 @@ func %[1]sValues() []%[1]s {
 
 // Arguments to format are:
 //	[1]: type name
+const stringsMethod = `// %[1]sStrings returns a slice of all String values of the enum
+func %[1]sStrings() []string {
+	strs := make([]string, len(_%[1]sNames))
+	copy(strs, _%[1]sNames)
+	return strs
+}
+`
+
+// Arguments to format are:
+//	[1]: type name
 const stringBelongsMethodLoop = `// IsA%[1]s returns "true" if the value is listed in the enum definition. "false" otherwise
 func (i %[1]s) IsA%[1]s() bool {
 	for _, v := range _%[1]sValues {
@@ -57,8 +67,26 @@ func (g *Generator) buildBasicExtras(runs [][]Value, typeName string, runsThresh
 	g.Printf("}\n\n")
 
 	// Print the map between name and value
-	g.Printf("\nvar _%sNameToValueMap = map[string]%s{\n", typeName, typeName)
+	g.printValueMap(runs, typeName, runsThreshold)
+
+	// Print the slice of names
+	g.printNamesSlice(runs, typeName, runsThreshold)
+
+	// Print the basic extra methods
+	g.Printf(stringNameToValueMethod, typeName)
+	g.Printf(stringValuesMethod, typeName)
+	g.Printf(stringsMethod, typeName)
+	if len(runs) < runsThreshold {
+		g.Printf(stringBelongsMethodLoop, typeName)
+	} else { // There is a map of values, the code is simpler then
+		g.Printf(stringBelongsMethodSet, typeName)
+	}
+}
+
+func (g *Generator) printValueMap(runs [][]Value, typeName string, runsThreshold int) {
 	thereAreRuns := len(runs) > 1 && len(runs) <= runsThreshold
+	g.Printf("\nvar _%sNameToValueMap = map[string]%s{\n", typeName, typeName)
+
 	var n int
 	var runID string
 	for i, values := range runs {
@@ -75,15 +103,27 @@ func (g *Generator) buildBasicExtras(runs [][]Value, typeName string, runsThresh
 		}
 	}
 	g.Printf("}\n\n")
+}
+func (g *Generator) printNamesSlice(runs [][]Value, typeName string, runsThreshold int) {
+	thereAreRuns := len(runs) > 1 && len(runs) <= runsThreshold
+	g.Printf("\nvar _%sNames = []string{\n", typeName)
 
-	// Print the basic extra methods
-	g.Printf(stringNameToValueMethod, typeName)
-	g.Printf(stringValuesMethod, typeName)
-	if len(runs) < runsThreshold {
-		g.Printf(stringBelongsMethodLoop, typeName)
-	} else { // There is a map of values, the code is simpler then
-		g.Printf(stringBelongsMethodSet, typeName)
+	var n int
+	var runID string
+	for i, values := range runs {
+		if thereAreRuns {
+			runID = "_" + fmt.Sprintf("%d", i)
+			n = 0
+		} else {
+			runID = ""
+		}
+
+		for _, value := range values {
+			g.Printf("\t_%sName%s[%d:%d],\n", typeName, runID, n, n+len(value.name))
+			n += len(value.name)
+		}
 	}
+	g.Printf("}\n\n")
 }
 
 // Arguments to format are:
