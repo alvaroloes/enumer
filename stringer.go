@@ -24,6 +24,8 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"unicode"
+	"unicode/utf8"
 
 	"golang.org/x/tools/go/packages"
 
@@ -50,6 +52,7 @@ var (
 	output          = flag.String("output", "", "output file name; default srcdir/<type>_string.go")
 	transformMethod = flag.String("transform", "noop", "enum item name transformation method. Default: noop")
 	trimPrefix      = flag.String("trimprefix", "", "transform each item name by removing a prefix. Default: \"\"")
+	addPrefix       = flag.String("addprefix", "", "transform each item name by adding a prefix. Default: \"\"")
 )
 
 var comments arrayFlags
@@ -122,7 +125,7 @@ func main() {
 
 	// Run generate for each type.
 	for _, typeName := range typs {
-		g.generate(typeName, *json, *yaml, *sql, *text, *transformMethod, *trimPrefix)
+		g.generate(typeName, *json, *yaml, *sql, *text, *transformMethod, *trimPrefix, *addPrefix)
 	}
 
 	// Format the output.
@@ -312,18 +315,63 @@ func (pkg *Package) check(fs *token.FileSet, astFiles []*ast.File) {
 }
 
 func (g *Generator) transformValueNames(values []Value, transformMethod string) {
-	var sep rune
+	var fn func(src string) string
 	switch transformMethod {
 	case "snake":
-		sep = '_'
+		fn = func(s string) string {
+			return strings.ToLower(name.Delimit(s, '_'))
+		}
+	case "snake_upper", "snake-upper":
+		fn = func(s string) string {
+			return strings.ToUpper(name.Delimit(s, '_'))
+		}
 	case "kebab":
-		sep = '-'
+		fn = func(s string) string {
+			return strings.ToLower(name.Delimit(s, '-'))
+		}
+	case "kebab_upper", "kebab-upper":
+		fn = func(s string) string {
+			return strings.ToUpper(name.Delimit(s, '-'))
+		}
+	case "upper":
+		fn = func(s string) string {
+			return strings.ToUpper(s)
+		}
+	case "lower":
+		fn = func(s string) string {
+			return strings.ToLower(s)
+		}
+	case "title":
+		fn = func(s string) string {
+			return strings.Title(s)
+		}
+	case "title-lower":
+		fn = func(s string) string {
+			title := []rune(strings.Title(s))
+			title[0] = unicode.ToLower(title[0])
+			return string(title)
+		}
+	case "first":
+		fn = func(s string) string {
+			r, _ := utf8.DecodeRuneInString(s)
+			return string(r)
+		}
+	case "first_upper", "first-upper":
+		fn = func(s string) string {
+			r, _ := utf8.DecodeRuneInString(s)
+			return strings.ToUpper(string(r))
+		}
+	case "first_lower", "first-lower":
+		fn = func(s string) string {
+			r, _ := utf8.DecodeRuneInString(s)
+			return strings.ToLower(string(r))
+		}
 	default:
 		return
 	}
 
 	for i := range values {
-		values[i].name = strings.ToLower(name.Delimit(values[i].name, sep))
+		values[i].name = fn(values[i].name)
 	}
 }
 
@@ -334,8 +382,16 @@ func (g *Generator) trimValueNames(values []Value, prefix string) {
 	}
 }
 
+// prefixValueNames adds a prefix to each name
+func (g *Generator) prefixValueNames(values []Value, prefix string) {
+	for i := range values {
+		values[i].name = prefix + values[i].name
+	}
+}
+
 // generate produces the String method for the named type.
-func (g *Generator) generate(typeName string, includeJSON, includeYAML, includeSQL, includeText bool, transformMethod string, trimPrefix string) {
+func (g *Generator) generate(typeName string, includeJSON, includeYAML, includeSQL, includeText bool,
+	transformMethod string, trimPrefix string, addPrefix string) {
 	values := make([]Value, 0, 100)
 	for _, file := range g.pkg.files {
 		// Set the state for this run of the walker.
@@ -354,6 +410,8 @@ func (g *Generator) generate(typeName string, includeJSON, includeYAML, includeS
 	g.trimValueNames(values, trimPrefix)
 
 	g.transformValueNames(values, transformMethod)
+
+	g.prefixValueNames(values, addPrefix)
 
 	runs := splitIntoRuns(values)
 	// The decision of which pattern to use depends on the number of
