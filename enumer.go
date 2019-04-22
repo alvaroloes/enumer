@@ -162,6 +162,7 @@ func (%[1]s) ImplementsGraphQLType(name string) bool {
 	return name == "%[1]s"
 }
 
+// UnmarshalGraphQL unmarshals a GraphQL input string to the enum value.
 func (i *%[1]s) UnmarshalGraphQL(input interface{}) error {
 	if str, ok := input.(string); ok {
 		if val, ok := _%[1]sNameToValueMap[str]; ok {
@@ -179,6 +180,15 @@ func (i *%[1]s) UnmarshalGraphQL(input interface{}) error {
 // query for fields that use the %[1]s type
 func (i %[1]s) MarshalJSON() ([]byte, error) {
 	return json.Marshal(i.String())
+}
+
+// Maybe%[1]s returns a pointer to an enum value if the passed value is
+// contained in the NameToValueMap, otherwise, it returns nil.
+func Maybe%[1]s(i %[1]s) *%[1]s {
+	if i.IsA%[1]s() {
+		return &i
+	}
+	return nil
 }
 `
 

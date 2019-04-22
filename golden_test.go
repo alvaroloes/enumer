@@ -174,6 +174,7 @@ func (Day) ImplementsGraphQLType(name string) bool {
 	return name == "Day"
 }
 
+// UnmarshalGraphQL unmarshals a GraphQL input string to the enum value.
 func (i *Day) UnmarshalGraphQL(input interface{}) error {
 	if str, ok := input.(string); ok {
 		if val, ok := _DayNameToValueMap[str]; ok {
@@ -191,6 +192,15 @@ func (i *Day) UnmarshalGraphQL(input interface{}) error {
 // query for fields that use the Day type
 func (i Day) MarshalJSON() ([]byte, error) {
 	return json.Marshal(i.String())
+}
+
+// MaybeDay returns a pointer to an enum value if the passed value is
+// contained in the NameToValueMap, otherwise, it returns nil.
+func MaybeDay(i Day) *Day {
+	if i.IsADay() {
+		return &i
+	}
+	return nil
 }
 `
 
