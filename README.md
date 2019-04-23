@@ -5,18 +5,12 @@ A fork of [alvaroloes/enumer](https://github.com/alvaroloes/enumer)
 Enumer is a tool to generate Go code that adds useful methods to Go enums (constants with a specific type).
 It started as a fork of [Rob Pike’s Stringer tool](https://godoc.org/golang.org/x/tools/cmd/stringer).
 
-## Note on Dependencies
-
-Dependencies for this fork are manged using
-[dep](https://golang.github.io/dep/). Refer to [it's
-documentation](https://golang.github.io/dep/docs/introduction.html) for further
-details.
 
 ## Generated functions and methods
 
 When Enumer is applied to a type, it will generate:
 
-* The following basic methods/functions: 
+* The following basic methods/functions:
 
   * Method `String()`: returns the string representation of the enum value. This makes the enum conform
 the `Stringer` interface, so whenever you print an enum value, you'll get the string name instead of a number.
@@ -29,7 +23,7 @@ be almost meaningless or hard to trace or use by a human.
 * When the flag `json` is provided, two additional methods will be generated, `MarshalJSON()` and `UnmarshalJSON()`. These make
 the enum conform to the `json.Marshaler` and `json.Unmarshaler` interfaces. Very useful to use it in JSON APIs.
 * When the flag `text` is provided, two additional methods will be generated, `MarshalText()` and `UnmarshalText()`. These make
-the enum conform to the `encoding.TextMarshaler` and `encoding.TextUnmarshaler` interfaces. 
+the enum conform to the `encoding.TextMarshaler` and `encoding.TextUnmarshaler` interfaces.
 **Note:** If you use your enum values as keys in a map and you encode the map as _JSON_, you need this flag set to true to properly
 convert the map keys to json (strings). If not, the numeric values will be used instead
 * When the flag `yaml` is provided, two additional methods will be generated, `MarshalYAML()` and `UnmarshalYAML()`. These make
@@ -52,19 +46,19 @@ const (
 ```
 executing `enumer -type=Pill -json` will generate a new file with four basic methods and two extra for JSON:
 ```go
-func (i Pill) String() string { 
+func (i Pill) String() string {
 	//...
 }
 
-func PillString(s string) (Pill, error) { 
+func PillString(s string) (Pill, error) {
 	//...
 }
 
-func PillValues() []Pill { 
+func PillValues() []Pill {
 	//...
 }
 
-func (i Pill) IsAPill() bool { 
+func (i Pill) IsAPill() bool {
 	//...
 }
 
