@@ -10,6 +10,9 @@
 package main
 
 import (
+	"io/ioutil"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 )
@@ -1050,7 +1053,24 @@ func runGoldenTest(t *testing.T, test Golden, generateJSON, generateYAML, genera
 	var g Generator
 	input := "package test\n" + test.input
 	file := test.name + ".go"
-	g.parsePackage(".", []string{file}, input)
+
+	dir, err := ioutil.TempDir("", "stringer")
+	if err != nil {
+		t.Error(err)
+	}
+	defer func() {
+		err = os.RemoveAll(dir)
+		if err != nil {
+			t.Error(err)
+		}
+	}()
+
+	absFile := filepath.Join(dir, file)
+	err = ioutil.WriteFile(absFile, []byte(input), 0644)
+	if err != nil {
+		t.Error(err)
+	}
+	g.parsePackage([]string{absFile})
 	// Extract the name and type of the constant from the first line.
 	tokens := strings.SplitN(test.input, " ", 3)
 	if len(tokens) != 3 {
