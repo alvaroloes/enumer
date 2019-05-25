@@ -51,6 +51,7 @@ var (
 	output          = flag.String("output", "", "output file name; default srcdir/<type>_string.go")
 	transformMethod = flag.String("transform", "noop", "enum item name transformation method. Default: noop")
 	trimPrefix      = flag.String("trimprefix", "", "transform each item name by removing a prefix. Default: \"\"")
+	lineComment     = flag.Bool("linecomment", false, "use line comment text as printed text when present")
 )
 
 var comments arrayFlags
@@ -120,7 +121,7 @@ func main() {
 
 	// Run generate for each type.
 	for _, typeName := range types {
-		g.generate(typeName, *json, *yaml, *sql, *text, *transformMethod, *trimPrefix)
+		g.generate(typeName, *json, *yaml, *sql, *text, *transformMethod, *trimPrefix, *lineComment)
 	}
 
 	// Format the output.
@@ -331,8 +332,16 @@ func (g *Generator) trimValueNames(values []Value, prefix string) {
 	}
 }
 
+func (g *Generator) replaceValuesWithLineComment(values []Value) {
+	for i, val := range values {
+		if val.comment != "" {
+			values[i].name = val.comment
+		}
+	}
+}
+
 // generate produces the String method for the named type.
-func (g *Generator) generate(typeName string, includeJSON, includeYAML, includeSQL, includeText bool, transformMethod string, trimPrefix string) {
+func (g *Generator) generate(typeName string, includeJSON, includeYAML, includeSQL, includeText bool, transformMethod string, trimPrefix string, lineComment bool) {
 	values := make([]Value, 0, 100)
 	for _, file := range g.pkg.files {
 		// Set the state for this run of the walker.
@@ -351,6 +360,10 @@ func (g *Generator) generate(typeName string, includeJSON, includeYAML, includeS
 	g.trimValueNames(values, trimPrefix)
 
 	g.transformValueNames(values, transformMethod)
+
+	if lineComment {
+		g.replaceValuesWithLineComment(values)
+	}
 
 	runs := splitIntoRuns(values)
 	// The decision of which pattern to use depends on the number of
@@ -443,9 +456,10 @@ type Value struct {
 	// this matters is when sorting.
 	// Much of the time the str field is all we need; it is printed
 	// by Value.String.
-	value  uint64 // Will be converted to int64 when needed.
-	signed bool   // Whether the constant is a signed type.
-	str    string // The string representation given by the "go/exact" package.
+	value   uint64 // Will be converted to int64 when needed.
+	signed  bool   // Whether the constant is a signed type.
+	str     string // The string representation given by the "go/exact" package.
+	comment string // The comment on the right of the constant
 }
 
 func (v *Value) String() string {
@@ -530,11 +544,17 @@ func (f *File) genDecl(node ast.Node) bool {
 			if !isInt {
 				u64 = uint64(i64)
 			}
+			comment := ""
+			if c := vspec.Comment; c != nil && len(c.List) == 1 {
+				comment = strings.TrimSpace(c.Text())
+			}
+
 			v := Value{
-				name:   name.Name,
-				value:  u64,
-				signed: info&types.IsUnsigned == 0,
-				str:    value.String(),
+				name:    name.Name,
+				value:   u64,
+				signed:  info&types.IsUnsigned == 0,
+				str:     value.String(),
+				comment: comment,
 			}
 			f.values = append(f.values, v)
 		}
