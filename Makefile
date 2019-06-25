@@ -1,1 +1,5 @@
-include github.com/svanburen/make/go
+test:
+	go test -v -race ./...
+
+bench:
+	go test -bench=.
