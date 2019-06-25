@@ -1152,3 +1152,63 @@ func runGoldenTest(t *testing.T, test Golden, generateJSON, generateYAML, genera
 		t.Errorf("%s: got\n====\n%s====\nexpected\n====%s", test.name, got, test.output)
 	}
 }
+
+func runGoldenBench(b *testing.B, test Golden, generateJSON, generateYAML, generateSQL, generateGraphQLGo, generateText bool, prefix string) {
+	for n := 0; n < b.N; n++ {
+		var g Generator
+		input := "package test\n" + test.input
+		file := test.name + ".go"
+		g.parsePackage(".", []string{file}, input)
+		// Extract the name and type of the constant from the first line.
+		tokens := strings.SplitN(test.input, " ", 3)
+		if len(tokens) != 3 {
+			b.Fatalf("%s: need type declaration on first line", test.name)
+		}
+		g.generate(tokens[1], generateJSON, generateYAML, generateSQL, generateGraphQLGo, generateText, "noop", prefix)
+		got := string(g.format())
+		if got != test.output {
+			b.Errorf("%s: got\n====\n%s====\nexpected\n====%s", test.name, got, test.output)
+		}
+	}
+}
+
+func BenchmarkGolden(b *testing.B) {
+	for _, test := range golden {
+		runGoldenBench(b, test, false, false, false, false, false, "")
+	}
+}
+func BenchmarkGoldenJSON(b *testing.B) {
+	for _, test := range goldenJSON {
+		runGoldenBench(b, test, true, false, false, false, false, "")
+	}
+}
+func BenchmarkGoldenText(b *testing.B) {
+	for _, test := range goldenText {
+		runGoldenBench(b, test, false, false, false, false, true, "")
+	}
+}
+func BenchmarkGoldenYAML(b *testing.B) {
+	for _, test := range goldenYAML {
+		runGoldenBench(b, test, false, true, false, false, false, "")
+	}
+}
+func BenchmarkGoldenSQL(b *testing.B) {
+	for _, test := range goldenSQL {
+		runGoldenBench(b, test, false, false, true, false, false, "")
+	}
+}
+func BenchmarkGoldenJSONAndSQL(b *testing.B) {
+	for _, test := range goldenJSONAndSQL {
+		runGoldenBench(b, test, true, false, true, false, false, "")
+	}
+}
+func BenchmarkGoldenPrefix(b *testing.B) {
+	for _, test := range goldenPrefix {
+		runGoldenBench(b, test, false, false, false, false, false, "Day")
+	}
+}
+func BenchmarkGoldenGraphQL(b *testing.B) {
+	for _, test := range goldenGraphQL {
+		runGoldenBench(b, test, false, false, false, true, false, "")
+	}
+}
