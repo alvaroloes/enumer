@@ -4,7 +4,7 @@ workflow "Test on Push" {
 }
 
 action "test" {
-  uses = "actions/action-builder/shell@master"
+  uses = "cedrickring/golang-action@1.3.0"
   runs = "make"
   args = "test"
 }
