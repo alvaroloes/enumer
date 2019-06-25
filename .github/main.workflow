@@ -3,8 +3,9 @@ workflow "Test on Push" {
   resolves = ["test"]
 }
 
-# Deploy, and write deployment to file
 action "test" {
+  uses = "actions/action-builder/shell@master"
   runs = "make"
   args = "test"
+}
 }
