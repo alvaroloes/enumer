@@ -8,4 +8,3 @@ action "test" {
   runs = "make"
   args = "test"
 }
-}
