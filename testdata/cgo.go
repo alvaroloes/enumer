@@ -15,10 +15,8 @@ import "fmt"
 
 type Cgo uint32
 
-const (
-	// MustScanSubDirs indicates that events were coalesced hierarchically.
-	MustScanSubDirs Cgo = 1 << iota
-)
+// MustScanSubDirs indicates that events were coalesced hierarchically.
+const MustScanSubDirs Cgo = 1 << iota
 
 func main() {
 	_ = C.HELLO

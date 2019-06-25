@@ -4,10 +4,10 @@
 
 // +build go1.5
 
-//Enumer is a tool to generate Go code that adds useful methods to Go enums (constants with a specific type).
-//It started as a fork of Rob Pike’s Stringer tool
+// Enumer is a tool to generate Go code that adds useful methods to Go enums (constants with a specific type).
+// It started as a fork of Rob Pike’s Stringer tool
 //
-//Please visit http://github.com/alvaroloes/enumer for a comprehensive documentation
+// Please visit http://github.com/alvaroloes/enumer for a comprehensive documentation
 package main
 
 import (

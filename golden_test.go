@@ -33,6 +33,7 @@ var golden = []Golden{
 var goldenJSON = []Golden{
 	{"prime", primeJsonIn, primeJsonOut},
 }
+
 var goldenText = []Golden{
 	{"prime", primeTextIn, primeTextOut},
 }
@@ -558,6 +559,7 @@ func (i Prime) IsAPrime() bool {
 	return ok
 }
 `
+
 const primeJsonIn = `type Prime int
 const (
 	p2 Prime = 2
@@ -1177,36 +1179,43 @@ func BenchmarkGolden(b *testing.B) {
 		runGoldenBench(b, test, false, false, false, false, false, "")
 	}
 }
+
 func BenchmarkGoldenJSON(b *testing.B) {
 	for _, test := range goldenJSON {
 		runGoldenBench(b, test, true, false, false, false, false, "")
 	}
 }
+
 func BenchmarkGoldenText(b *testing.B) {
 	for _, test := range goldenText {
 		runGoldenBench(b, test, false, false, false, false, true, "")
 	}
 }
+
 func BenchmarkGoldenYAML(b *testing.B) {
 	for _, test := range goldenYAML {
 		runGoldenBench(b, test, false, true, false, false, false, "")
 	}
 }
+
 func BenchmarkGoldenSQL(b *testing.B) {
 	for _, test := range goldenSQL {
 		runGoldenBench(b, test, false, false, true, false, false, "")
 	}
 }
+
 func BenchmarkGoldenJSONAndSQL(b *testing.B) {
 	for _, test := range goldenJSONAndSQL {
 		runGoldenBench(b, test, true, false, true, false, false, "")
 	}
 }
+
 func BenchmarkGoldenPrefix(b *testing.B) {
 	for _, test := range goldenPrefix {
 		runGoldenBench(b, test, false, false, false, false, false, "Day")
 	}
 }
+
 func BenchmarkGoldenGraphQL(b *testing.B) {
 	for _, test := range goldenGraphQL {
 		runGoldenBench(b, test, false, false, false, true, false, "")
