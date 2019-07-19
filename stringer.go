@@ -48,6 +48,7 @@ var (
 	json            = flag.Bool("json", false, "if true, json marshaling methods will be generated. Default: false")
 	yaml            = flag.Bool("yaml", false, "if true, yaml marshaling methods will be generated. Default: false")
 	text            = flag.Bool("text", false, "if true, text marshaling methods will be generated. Default: false")
+	bson            = flag.Bool("bson", false, "if true, bson marshaling methods will be generated. Default: false")
 	output          = flag.String("output", "", "output file name; default srcdir/<type>_string.go")
 	transformMethod = flag.String("transform", "noop", "enum item name transformation method. Default: noop")
 	trimPrefix      = flag.String("trimprefix", "", "transform each item name by removing a prefix. Default: \"\"")
@@ -117,11 +118,15 @@ func main() {
 	if *json {
 		g.Printf("\t\"encoding/json\"\n")
 	}
+	if *bson {
+		g.Printf("\t\"go.mongodb.org/mongo-driver/bson/bsontype\"\n")
+		g.Printf("\t\"go.mongodb.org/mongo-driver/x/bsonx/bsoncore\"\n")
+	}
 	g.Printf(")\n")
 
 	// Run generate for each type.
 	for _, typeName := range types {
-		g.generate(typeName, *json, *yaml, *sql, *text, *transformMethod, *trimPrefix, *lineComment)
+		g.generate(typeName, *json, *yaml, *sql, *text, *bson, *transformMethod, *trimPrefix, *lineComment)
 	}
 
 	// Format the output.
@@ -341,7 +346,7 @@ func (g *Generator) replaceValuesWithLineComment(values []Value) {
 }
 
 // generate produces the String method for the named type.
-func (g *Generator) generate(typeName string, includeJSON, includeYAML, includeSQL, includeText bool, transformMethod string, trimPrefix string, lineComment bool) {
+func (g *Generator) generate(typeName string, includeJSON, includeYAML, includeSQL, includeText, includeBSON bool, transformMethod string, trimPrefix string, lineComment bool) {
 	values := make([]Value, 0, 100)
 	for _, file := range g.pkg.files {
 		// Set the state for this run of the walker.
@@ -397,6 +402,9 @@ func (g *Generator) generate(typeName string, includeJSON, includeYAML, includeS
 	}
 	if includeYAML {
 		g.buildYAMLMethods(runs, typeName, runsThreshold)
+	}
+	if includeBSON {
+		g.buildBSONMethods(runs, typeName, runsThreshold)
 	}
 	if includeSQL {
 		g.addValueAndScanMethod(typeName)
