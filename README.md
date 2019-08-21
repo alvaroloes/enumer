@@ -14,7 +14,7 @@ After that, the `enumer` executable will be in "$GOPATH/bin" folder and you can 
 ## Generated functions and methods
 When Enumer is applied to a type, it will generate:
 
-* The following basic methods/functions: 
+* The following basic methods/functions:
 
   * Method `String()`: returns the string representation of the enum value. This makes the enum conform
 the `Stringer` interface, so whenever you print an enum value, you'll get the string name instead of a number.
@@ -27,7 +27,7 @@ be almost meaningless or hard to trace or use by a human.
 * When the flag `json` is provided, two additional methods will be generated, `MarshalJSON()` and `UnmarshalJSON()`. These make
 the enum conform to the `json.Marshaler` and `json.Unmarshaler` interfaces. Very useful to use it in JSON APIs.
 * When the flag `text` is provided, two additional methods will be generated, `MarshalText()` and `UnmarshalText()`. These make
-the enum conform to the `encoding.TextMarshaler` and `encoding.TextUnmarshaler` interfaces. 
+the enum conform to the `encoding.TextMarshaler` and `encoding.TextUnmarshaler` interfaces.
 **Note:** If you use your enum values as keys in a map and you encode the map as _JSON_, you need this flag set to true to properly
 convert the map keys to json (strings). If not, the numeric values will be used instead
 * When the flag `yaml` is provided, two additional methods will be generated, `MarshalYAML()` and `UnmarshalYAML()`. These make
@@ -49,19 +49,19 @@ const (
 ```
 executing `enumer -type=Pill -json` will generate a new file with four basic methods and two extra for JSON:
 ```go
-func (i Pill) String() string { 
+func (i Pill) String() string {
 	//...
 }
 
-func PillString(s string) (Pill, error) { 
+func PillString(s string) (Pill, error) {
 	//...
 }
 
-func PillValues() []Pill { 
+func PillValues() []Pill {
 	//...
 }
 
-func (i Pill) IsAPill() bool { 
+func (i Pill) IsAPill() bool {
 	//...
 }
 
@@ -128,7 +128,7 @@ For example, the command `enumer -type=MyType -json -transform=snake` would gene
 ```go
 name := MyTypeValue.String() // name => "my_type_value"
 ```
-**Note**: The transformation only works form CamelCase to snake_case or kebab-case, not the other way around.
+**Note**: The transformation only works from CamelCase to snake_case or kebab-case, not the other way around.
 
 ## How to use
 The usage of Enumer is the same as Stringer, so you can refer to the [Stringer docs](https://godoc.org/golang.org/x/tools/cmd/stringer)
@@ -139,7 +139,8 @@ There are four boolean flags: `json`, `text`, `yaml` and `sql`. You can use any 
 
 For enum string representation transformation the `transform` and `trimprefix` flags
 were added (i.e. `enumer -type=MyType -json -transform=snake`).
-Possible transform values are `snake` and `kebab` for transformation to snake_case and kebab-case accordingly.
+Possible transform values are `snake`, `kebab` `macro` and `phrase` for transformation
+to snake_case, kebab-case, MACRO_CASE or a phrase (i.e. space-separated words) accordingly.
 The default value for `transform` flag is `noop` which means no transformation will be performed.
 
 If a prefix is provided via the `trimprefix` flag, it will be trimmed from the start of each name (before

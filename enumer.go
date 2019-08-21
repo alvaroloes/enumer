@@ -39,7 +39,7 @@ func (i %[1]s) IsA%[1]s() bool {
 //	[1]: type name
 const stringBelongsMethodSet = `// IsA%[1]s returns "true" if the value is listed in the enum definition. "false" otherwise
 func (i %[1]s) IsA%[1]s() bool {
-	_, ok := _%[1]sMap[i] 
+	_, ok := _%[1]sMap[i]
 	return ok
 }
 `

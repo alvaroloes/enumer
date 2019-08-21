@@ -316,6 +316,14 @@ func (g *Generator) transformValueNames(values []Value, transformMethod string) 
 		sep = '_'
 	case "kebab":
 		sep = '-'
+	case "phrase":
+		sep = ' '
+	case "macro":
+		sep = '_'
+		for i := range values {
+			values[i].name = strings.ToUpper(name.Delimit(values[i].name, sep))
+		}
+		return
 	default:
 		return
 	}
