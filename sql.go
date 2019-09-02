@@ -26,7 +26,7 @@ const scanMethod = `func (i *%[1]s) Scan(value interface{}) error {
 	if err != nil {
 		return err
 	}
-	
+
 	*i = val
 	return nil
 }
