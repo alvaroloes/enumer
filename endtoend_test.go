@@ -16,9 +16,23 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 )
+
+var (
+	// GOEXE defines the executable file name suffix (".exe" on Windows, "" on other systems).
+	// Must be defined here, cannot be read from ENVIRONMENT variables
+	GOEXE = ""
+)
+
+func init() {
+	// Set GOEXE for Windows platform
+	if runtime.GOOS == "windows" {
+		GOEXE = ".exe"
+	}
+}
 
 // This file contains a test that compiles and runs each program in testdata
 // after generating the string method for its type. The rule is that for testdata/x.go
@@ -31,8 +45,9 @@ func TestEndToEnd(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer os.RemoveAll(dir)
+
 	// Create stringer in temporary directory.
-	stringer := filepath.Join(dir, "stringer.exe")
+	stringer := filepath.Join(dir, fmt.Sprintf("stringer%s", GOEXE))
 	err = run("go", "build", "-o", stringer)
 	if err != nil {
 		t.Fatalf("building stringer: %s", err)
