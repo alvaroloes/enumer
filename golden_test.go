@@ -56,6 +56,10 @@ var goldenPrefix = []Golden{
 	{"prefix", prefixIn, dayOut},
 }
 
+var goldenMultiplePrefixes = []Golden{
+	{"multiple prefixes", dayNightIn, dayNightOut},
+}
+
 var goldenWithLineComments = []Golden{
 	{"primer with line Comments", primeWithLineCommentIn, primeWithLineCommentOut},
 }
@@ -1113,6 +1117,125 @@ func (i Prime) IsAPrime() bool {
 }
 `
 
+const dayNightIn = `type Day int
+const (
+	DayMonday Day = iota
+	DayTuesday
+	DayWednesday
+	DayThursday
+	DayFriday
+	DaySaturday
+	DaySunday
+)
+
+type Night int
+const (
+	NightMonday Night = iota
+	NightTuesday
+	NightWednesday
+	NightThursday
+	NightFriday
+	NightSaturday
+	NightSunday
+)
+`
+
+const dayNightOut = `
+const _DayName = "MondayTuesdayWednesdayThursdayFridaySaturdaySunday"
+
+var _DayIndex = [...]uint8{0, 6, 13, 22, 30, 36, 44, 50}
+
+func (i Day) String() string {
+	if i < 0 || i >= Day(len(_DayIndex)-1) {
+		return fmt.Sprintf("Day(%d)", i)
+	}
+	return _DayName[_DayIndex[i]:_DayIndex[i+1]]
+}
+
+var _DayValues = []Day{0, 1, 2, 3, 4, 5, 6}
+
+var _DayNameToValueMap = map[string]Day{
+	_DayName[0:6]:   0,
+	_DayName[6:13]:  1,
+	_DayName[13:22]: 2,
+	_DayName[22:30]: 3,
+	_DayName[30:36]: 4,
+	_DayName[36:44]: 5,
+	_DayName[44:50]: 6,
+}
+
+// DayString retrieves an enum value from the enum constants string name.
+// Throws an error if the param is not part of the enum.
+func DayString(s string) (Day, error) {
+	if val, ok := _DayNameToValueMap[s]; ok {
+		return val, nil
+	}
+	return 0, fmt.Errorf("%s does not belong to Day values", s)
+}
+
+// DayValues returns all values of the enum
+func DayValues() []Day {
+	return _DayValues
+}
+
+// IsADay returns "true" if the value is listed in the enum definition. "false" otherwise
+func (i Day) IsADay() bool {
+	for _, v := range _DayValues {
+		if i == v {
+			return true
+		}
+	}
+	return false
+}
+
+const _NightName = "MondayTuesdayWednesdayThursdayFridaySaturdaySunday"
+
+var _NightIndex = [...]uint8{0, 6, 13, 22, 30, 36, 44, 50}
+
+func (i Night) String() string {
+	if i < 0 || i >= Night(len(_NightIndex)-1) {
+		return fmt.Sprintf("Night(%d)", i)
+	}
+	return _NightName[_NightIndex[i]:_NightIndex[i+1]]
+}
+
+var _NightValues = []Night{0, 1, 2, 3, 4, 5, 6}
+
+var _NightNameToValueMap = map[string]Night{
+	_NightName[0:6]:   0,
+	_NightName[6:13]:  1,
+	_NightName[13:22]: 2,
+	_NightName[22:30]: 3,
+	_NightName[30:36]: 4,
+	_NightName[36:44]: 5,
+	_NightName[44:50]: 6,
+}
+
+// NightString retrieves an enum value from the enum constants string name.
+// Throws an error if the param is not part of the enum.
+func NightString(s string) (Night, error) {
+	if val, ok := _NightNameToValueMap[s]; ok {
+		return val, nil
+	}
+	return 0, fmt.Errorf("%s does not belong to Night values", s)
+}
+
+// NightValues returns all values of the enum
+func NightValues() []Night {
+	return _NightValues
+}
+
+// IsANight returns "true" if the value is listed in the enum definition. "false" otherwise
+func (i Night) IsANight() bool {
+	for _, v := range _NightValues {
+		if i == v {
+			return true
+		}
+	}
+	return false
+}
+`
+
 func TestGolden(t *testing.T) {
 	for _, test := range golden {
 		runGoldenTest(t, test, false, false, false, false, "")
@@ -1135,38 +1258,55 @@ func TestGolden(t *testing.T) {
 	for _, test := range goldenPrefix {
 		runGoldenTest(t, test, false, false, false, false, "Day")
 	}
+	for _, test := range goldenMultiplePrefixes {
+		runGoldenTest(t, test, false, false, false, false, "Day,Night")
+	}
 }
 
 func runGoldenTest(t *testing.T, test Golden, generateJSON, generateYAML, generateSQL, generateText bool, prefix string) {
-	var g Generator
-	input := "package test\n" + test.input
-	file := test.name + ".go"
+	t.Run(test.name, func(t *testing.T) {
+		var g Generator
+		input := "package test\n" + test.input
+		file := test.name + ".go"
 
-	dir, err := ioutil.TempDir("", "stringer")
-	if err != nil {
-		t.Error(err)
-	}
-	defer func() {
-		err = os.RemoveAll(dir)
+		dir, err := ioutil.TempDir("", "stringer")
 		if err != nil {
 			t.Error(err)
 		}
-	}()
+		defer func() {
+			err = os.RemoveAll(dir)
+			if err != nil {
+				t.Error(err)
+			}
+		}()
 
-	absFile := filepath.Join(dir, file)
-	err = ioutil.WriteFile(absFile, []byte(input), 0644)
-	if err != nil {
-		t.Error(err)
-	}
-	g.parsePackage([]string{absFile})
-	// Extract the name and type of the constant from the first line.
-	tokens := strings.SplitN(test.input, " ", 3)
-	if len(tokens) != 3 {
-		t.Fatalf("%s: need type declaration on first line", test.name)
-	}
-	g.generate(tokens[1], generateJSON, generateYAML, generateSQL, generateText, "noop", prefix, false)
-	got := string(g.format())
-	if got != test.output {
-		t.Errorf("%s: got\n====\n%s====\nexpected\n====%s", test.name, got, test.output)
-	}
+		absFile := filepath.Join(dir, file)
+		err = ioutil.WriteFile(absFile, []byte(input), 0644)
+		if err != nil {
+			t.Error(err)
+		}
+		g.parsePackage([]string{absFile})
+		// Extract the names and type of the constants
+		var typeNames []string
+		lines := strings.Split(test.input, "\n")
+		for _, line := range lines {
+			if strings.HasPrefix(line, "type ") {
+				tokens := strings.Split(line, " ")
+				if len(tokens) == 3 {
+					typeNames = append(typeNames, tokens[1])
+				}
+			}
+		}
+		if len(typeNames) == 0 {
+			t.Fatalf("%s: need type declaration on first line", test.name)
+		}
+
+		for _, typeName := range typeNames {
+			g.generate(typeName, generateJSON, generateYAML, generateSQL, generateText, "noop", prefix, false)
+		}
+		got := string(g.format())
+		if got != test.output {
+			t.Errorf("%s: got\n====\n%s====\nexpected\n====%s", test.name, got, test.output)
+		}
+	})
 }
