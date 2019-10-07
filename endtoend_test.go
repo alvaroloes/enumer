@@ -119,7 +119,14 @@ func copy(to, from string) error {
 // run runs a single command and returns an error if it does not succeed.
 // os/exec should have this function, to be honest.
 func run(name string, arg ...string) error {
+	return runInDir(".", name, arg...)
+}
+
+// runInDir runs a single command in directory dir and returns an error if
+// it does not succeed.
+func runInDir(dir, name string, arg ...string) error {
 	cmd := exec.Command(name, arg...)
+	cmd.Dir = dir
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	return cmd.Run()
