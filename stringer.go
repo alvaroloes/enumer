@@ -316,6 +316,8 @@ func (g *Generator) transformValueNames(values []Value, transformMethod string) 
 		sep = '_'
 	case "kebab":
 		sep = '-'
+	case "space":
+		sep = ' '
 	default:
 		return
 	}

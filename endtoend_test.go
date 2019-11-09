@@ -64,6 +64,9 @@ func TestEndToEnd(t *testing.T) {
 		if name == "transform.go" {
 			typeName = "CamelCaseValue"
 			transformNameMethod = "snake"
+		} else if name == "transformspace.go" {
+			typeName = "CamelCaseValue"
+			transformNameMethod = "space"
 		}
 
 		stringerCompileAndRun(t, dir, stringer, typeName, name, transformNameMethod)
