@@ -121,14 +121,14 @@ name := MyTypeValue.String() // name => "MyTypeValue"
 
 Sometimes you need to use some other string representation format than CamelCase (i.e. in JSON).
 
-To transform it from CamelCase to snake_case or kebab-case, you can use the `transform` flag.
+To transform it from CamelCase to lowerCamelCase, snake_case or kebab-case, you can use the `transform` flag.
 
 For example, the command `enumer -type=MyType -json -transform=snake` would generate the following string representation:
 
 ```go
 name := MyTypeValue.String() // name => "my_type_value"
 ```
-**Note**: The transformation only works form CamelCase to snake_case or kebab-case, not the other way around.
+**Note**: The transformation only works form CamelCase to lowerCamelCase, snake_case or kebab-case, not the other way around.
 
 ## How to use
 The usage of Enumer is the same as Stringer, so you can refer to the [Stringer docs](https://godoc.org/golang.org/x/tools/cmd/stringer)
@@ -139,7 +139,7 @@ There are four boolean flags: `json`, `text`, `yaml` and `sql`. You can use any 
 
 For enum string representation transformation the `transform` and `trimprefix` flags
 were added (i.e. `enumer -type=MyType -json -transform=snake`).
-Possible transform values are `snake` and `kebab` for transformation to snake_case and kebab-case accordingly.
+Possible transform values are `lowercamel`, `snake` and `kebab` for transformation to lowerCamelCase, snake_case and kebab-case case accordingly.
 The default value for `transform` flag is `noop` which means no transformation will be performed.
 
 If a prefix is provided via the `trimprefix` flag, it will be trimmed from the start of each name (before
