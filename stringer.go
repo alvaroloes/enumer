@@ -310,16 +310,21 @@ func (pkg *Package) check(fs *token.FileSet, astFiles []*ast.File) {
 }
 
 func (g *Generator) transformValueNames(values []Value, transformMethod string) {
-	var sep rune
 	switch transformMethod {
 	case "snake":
-		sep = '_'
+		g.separateValueNames(values, '_')
 	case "kebab":
-		sep = '-'
+		g.separateValueNames(values, '-')
+	case "lowercamel":
+		for i := range values {
+			values[i].name = strings.ToLower(string(values[i].name[0])) + values[i].name[1:]
+		}
 	default:
 		return
 	}
+}
 
+func (g *Generator) separateValueNames(values []Value, sep rune) {
 	for i := range values {
 		values[i].name = strings.ToLower(name.Delimit(values[i].name, sep))
 	}
